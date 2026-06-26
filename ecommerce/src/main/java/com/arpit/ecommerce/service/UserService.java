@@ -19,4 +19,21 @@ public class UserService {
     public List<User> getUsers(){
         return userRepository.findAll();
     }
+
+    public User getUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    public User updateUser(Long id,User user){
+        User existingUser = userRepository.findById(id).orElse(null);
+        if (existingUser != null){
+            existingUser.setName(user.getName());
+            existingUser.setEmail(user.getEmail());
+            existingUser.setPassword(user.getPassword());
+            existingUser.setRole(user.getRole());
+
+            return userRepository.save(existingUser);
+        }
+        return null;
+    }
 }
