@@ -1,5 +1,7 @@
 package com.arpit.ecommerce.service;
 
+import com.arpit.ecommerce.dto.UserRequestDTO;
+import com.arpit.ecommerce.dto.UserResponseDTO;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +14,37 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public User register(User user){
-        return userRepository.save(user);
+//    public User register(User user)
+    public UserResponseDTO register (UserRequestDTO requestDTO){
+        User user = new User();
+        user.setName(requestDTO.getName());
+        user.setEmail(requestDTO.getEmail());
+        user.setPassword(requestDTO.getPassword());
+
+        user = userRepository.save(user);
+
+        UserResponseDTO userResponseDTO = new UserResponseDTO();
+        userResponseDTO.setId(user.getId());
+        userResponseDTO.setEmail(user.getEmail());
+        userResponseDTO.setName(user.getName());
+
+        return userResponseDTO;
     }
 
     public List<User> getUsers(){
         return userRepository.findAll();
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public UserResponseDTO getUserById(Long id) {
+        User user = userRepository.findById(id).orElse(null);
+        UserResponseDTO responseDTO = new UserResponseDTO();
+        if(user == null){
+            return null;
+        }
+        responseDTO.setName(user.getName());
+        responseDTO.setEmail(user.getEmail());
+        responseDTO.setId(user.getId());
+        return responseDTO;
     }
 
     public User updateUser(Long id,User user){

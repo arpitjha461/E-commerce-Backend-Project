@@ -1,5 +1,7 @@
 package com.arpit.ecommerce.controller;
 
+import com.arpit.ecommerce.dto.UserRequestDTO;
+import com.arpit.ecommerce.dto.UserResponseDTO;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +16,9 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/register")
-    public User register(@RequestBody User user){
-        return userService.register(user);
+//    public User register(@RequestBody User user)
+    public UserResponseDTO register (@RequestBody UserRequestDTO requestDTO){
+        return userService.register(requestDTO);
     }
     @GetMapping
     public List<User> getUsers(){
@@ -23,7 +26,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id){
+    public UserResponseDTO getUserById(@PathVariable Long id){
         return userService.getUserById(id);
     }
 
