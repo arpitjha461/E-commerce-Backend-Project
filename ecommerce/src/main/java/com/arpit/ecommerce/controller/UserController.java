@@ -21,7 +21,7 @@ public class UserController {
         return userService.register(requestDTO);
     }
     @GetMapping
-    public List<User> getUsers(){
+    public List<UserResponseDTO> getUsers(){
         return userService.getUsers();
     }
 

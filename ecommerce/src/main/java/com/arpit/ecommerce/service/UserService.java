@@ -4,9 +4,12 @@ import com.arpit.ecommerce.dto.UserRequestDTO;
 import com.arpit.ecommerce.dto.UserResponseDTO;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.repository.UserRepository;
+import org.hibernate.internal.util.collections.ArrayHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -31,8 +34,18 @@ public class UserService {
         return userResponseDTO;
     }
 
-    public List<User> getUsers(){
-        return userRepository.findAll();
+    public List<UserResponseDTO> getUsers(){
+        List<User> users = userRepository.findAll();
+        List<UserResponseDTO> responseDTOList = new ArrayList<>();
+        for (User user:users){
+            UserResponseDTO dto = new UserResponseDTO();
+            dto.setId(user.getId());
+            dto.setEmail(user.getEmail());
+            dto.setName(user.getName());
+            responseDTOList.add(dto);
+        }
+
+        return responseDTOList;
     }
 
     public UserResponseDTO getUserById(Long id) {
