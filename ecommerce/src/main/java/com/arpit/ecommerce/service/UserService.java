@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
+
 @Service
 public class UserService {
     @Autowired
@@ -44,7 +46,6 @@ public class UserService {
             dto.setName(user.getName());
             responseDTOList.add(dto);
         }
-
         return responseDTOList;
     }
 
@@ -60,17 +61,23 @@ public class UserService {
         return responseDTO;
     }
 
-    public User updateUser(Long id,User user){
+//    public User updateUser(Long id,User user)
+    public UserResponseDTO updateUser(Long id, UserRequestDTO requestDTO){
         User existingUser = userRepository.findById(id).orElse(null);
-        if (existingUser != null){
-            existingUser.setName(user.getName());
-            existingUser.setEmail(user.getEmail());
-            existingUser.setPassword(user.getPassword());
-            existingUser.setRole(user.getRole());
 
-            return userRepository.save(existingUser);
+        if (existingUser ==null) return null;
+        else {
+            existingUser.setName(requestDTO.getName());
+            existingUser.setEmail(requestDTO.getEmail());
+            existingUser.setPassword(requestDTO.getPassword());
+            existingUser = userRepository.save(existingUser);
+
+            UserResponseDTO responseDTO = new UserResponseDTO();
+            responseDTO.setId(existingUser.getId());
+            responseDTO.setName(existingUser.getName());
+            responseDTO.setEmail(existingUser.getEmail());
+            return responseDTO;
         }
-        return null;
     }
     public String deleteUser(Long id){
         if (userRepository.existsById(id)){

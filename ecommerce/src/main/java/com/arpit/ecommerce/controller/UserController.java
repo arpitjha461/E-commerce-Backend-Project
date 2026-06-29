@@ -2,7 +2,6 @@ package com.arpit.ecommerce.controller;
 
 import com.arpit.ecommerce.dto.UserRequestDTO;
 import com.arpit.ecommerce.dto.UserResponseDTO;
-import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,8 +30,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public User userUpdate(@PathVariable Long id, @RequestBody User user){
-        return userService.updateUser(id, user);
+    public UserResponseDTO userUpdate(@PathVariable Long id, @RequestBody UserRequestDTO requestDTO){
+        return userService.updateUser(id, requestDTO);
     }
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable Long id){
