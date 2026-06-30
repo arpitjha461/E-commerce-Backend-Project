@@ -80,10 +80,12 @@ public class UserService {
         }
     }
     public String deleteUser(Long id){
-        if (userRepository.existsById(id)){
-            userRepository.deleteById(id);
-            return "User deleted successfully having id: "+id;
+        User existingUser = userRepository.findById(id).orElse(null);
+        if (existingUser == null){
+            return "user not found";
         }
-        return "user not found";
+        userRepository.deleteById(id);
+        return "User deleted successfully having id: "+id;
+
     }
 }
