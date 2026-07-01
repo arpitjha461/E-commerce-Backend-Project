@@ -6,6 +6,7 @@ import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.repository.UserRepository;
 import org.hibernate.internal.util.collections.ArrayHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,13 +20,16 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-//    public User register(User user)
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+//  public User register(User user)
     public UserResponseDTO register (UserRequestDTO requestDTO){
         User user = new User();
         user.setName(requestDTO.getName());
         user.setEmail(requestDTO.getEmail());
-        user.setPassword(requestDTO.getPassword());
-
+//        user.setPassword(requestDTO.getPassword());
+        user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
         user = userRepository.save(user);
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
