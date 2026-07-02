@@ -14,7 +14,6 @@ public class GlobalExceptionHandler {
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<Map<String,String>> handleValidationException(MethodArgumentNotValidException ex) {
-
             Map<String, String> errors = new HashMap<>();
             ex.getBindingResult().getFieldErrors().forEach(error -> {
                 errors.put(error.getField(), error.getDefaultMessage());
@@ -22,4 +21,9 @@ public class GlobalExceptionHandler {
 
             return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
         }
+        @ExceptionHandler(InvalidCredentialsException.class)
+        public ResponseEntity<String> handleInvalidCredentials(InvalidCredentialsException ex){
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.UNAUTHORIZED);
+        }
+
 }

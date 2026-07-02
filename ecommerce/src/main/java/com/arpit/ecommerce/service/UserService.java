@@ -5,6 +5,7 @@ import com.arpit.ecommerce.dto.LoginResponseDTO;
 import com.arpit.ecommerce.dto.UserRequestDTO;
 import com.arpit.ecommerce.dto.UserResponseDTO;
 import com.arpit.ecommerce.entity.User;
+import com.arpit.ecommerce.exception.InvalidCredentialsException;
 import com.arpit.ecommerce.repository.UserRepository;
 import org.hibernate.internal.util.collections.ArrayHelper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,7 +107,7 @@ public class UserService {
                 !passwordEncoder.matches(
                         loginRequestDTO.getPassword(),
                         user.getPassword())) {
-            throw new RuntimeException("Invalid");
+            throw new InvalidCredentialsException("Invalid Email or password");
 //            throw new ResponseStatusException(
 //                    HttpStatus.UNAUTHORIZED,
 //                    "Invalid email or password"
