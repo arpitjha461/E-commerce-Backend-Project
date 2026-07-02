@@ -1,5 +1,7 @@
 package com.arpit.ecommerce.controller;
 
+import com.arpit.ecommerce.dto.LoginRequestDTO;
+import com.arpit.ecommerce.dto.LoginResponseDTO;
 import com.arpit.ecommerce.dto.UserRequestDTO;
 import com.arpit.ecommerce.dto.UserResponseDTO;
 import com.arpit.ecommerce.service.UserService;
@@ -36,5 +38,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public String deleteUser(@PathVariable Long id){
         return  userService.deleteUser(id);
+    }
+
+    @PostMapping("/login")
+    public LoginResponseDTO login(@Valid @RequestBody LoginRequestDTO loginRequestDTO){
+        System.out.println("LOGIN API HIT");
+       return userService.login(loginRequestDTO);
     }
 }

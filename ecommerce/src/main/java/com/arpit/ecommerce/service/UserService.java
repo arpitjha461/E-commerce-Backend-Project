@@ -1,13 +1,17 @@
 package com.arpit.ecommerce.service;
 
+import com.arpit.ecommerce.dto.LoginRequestDTO;
+import com.arpit.ecommerce.dto.LoginResponseDTO;
 import com.arpit.ecommerce.dto.UserRequestDTO;
 import com.arpit.ecommerce.dto.UserResponseDTO;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.repository.UserRepository;
 import org.hibernate.internal.util.collections.ArrayHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -73,7 +77,7 @@ public class UserService {
         else {
             existingUser.setName(requestDTO.getName());
             existingUser.setEmail(requestDTO.getEmail());
-            existingUser.setPassword(requestDTO.getPassword());
+            existingUser.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
             existingUser = userRepository.save(existingUser);
 
             UserResponseDTO responseDTO = new UserResponseDTO();
@@ -83,6 +87,7 @@ public class UserService {
             return responseDTO;
         }
     }
+
     public String deleteUser(Long id){
         User existingUser = userRepository.findById(id).orElse(null);
         if (existingUser == null){
@@ -91,5 +96,28 @@ public class UserService {
         userRepository.deleteById(id);
         return "User deleted successfully having id: "+id;
 
+    }
+
+    public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
+        System.out.println("Service Called");
+        User user = userRepository.findByEmail(loginRequestDTO.getEmail()).orElse(null);
+
+        if (user == null ||
+                !passwordEncoder.matches(
+                        loginRequestDTO.getPassword(),
+                        user.getPassword())) {
+            throw new RuntimeException("Invalid");
+//            throw new ResponseStatusException(
+//                    HttpStatus.UNAUTHORIZED,
+//                    "Invalid email or password"
+//            return null;
+        }
+        LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
+        loginResponseDTO.setId(user.getId());
+        loginResponseDTO.setEmail(user.getEmail());
+        loginResponseDTO.setName(user.getName());
+        loginResponseDTO.setMessage("Login Successful");
+
+        return loginResponseDTO;
     }
 }
