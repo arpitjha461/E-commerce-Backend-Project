@@ -5,7 +5,7 @@ public class LoginResponseDTO {
     private Long id;
     private String name;
     private String email;
-    private String message;
+    private String token;
 
     public Long getId() {
         return id;
@@ -31,11 +31,10 @@ public class LoginResponseDTO {
         this.email = email;
     }
 
-    public String getMessage() {
-        return message;
+    public String getToken() {
+        return token;
     }
-
-    public void setMessage(String message) {
-        this.message = message;
+    public void setToken(String token) {
+        this.token = token;
     }
 }

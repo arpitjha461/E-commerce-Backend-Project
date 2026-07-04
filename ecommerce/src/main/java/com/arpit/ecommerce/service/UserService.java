@@ -7,6 +7,7 @@ import com.arpit.ecommerce.dto.UserResponseDTO;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.exception.InvalidCredentialsException;
 import com.arpit.ecommerce.repository.UserRepository;
+import com.arpit.ecommerce.util.JwtUtil;
 import org.hibernate.internal.util.collections.ArrayHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,6 +28,9 @@ public class UserService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
 //  public User register(User user)
     public UserResponseDTO register (UserRequestDTO requestDTO){
@@ -100,7 +104,6 @@ public class UserService {
     }
 
     public LoginResponseDTO login(LoginRequestDTO loginRequestDTO){
-        System.out.println("Service Called");
         User user = userRepository.findByEmail(loginRequestDTO.getEmail()).orElse(null);
 
         if (user == null ||
@@ -108,16 +111,17 @@ public class UserService {
                         loginRequestDTO.getPassword(),
                         user.getPassword())) {
             throw new InvalidCredentialsException("Invalid Email or password");
-//            throw new ResponseStatusException(
-//                    HttpStatus.UNAUTHORIZED,
-//                    "Invalid email or password"
-//            return null;
         }
         LoginResponseDTO loginResponseDTO = new LoginResponseDTO();
         loginResponseDTO.setId(user.getId());
         loginResponseDTO.setEmail(user.getEmail());
         loginResponseDTO.setName(user.getName());
-        loginResponseDTO.setMessage("Login Successful");
+//        loginResponseDTO.setMessage("Login Successful");
+
+        String token = jwtUtil.generateToken(user.getEmail());
+        loginResponseDTO.setToken(token);
+        System.out.println(token);
+        System.out.println(jwtUtil.extractEmail(token));
 
         return loginResponseDTO;
     }
