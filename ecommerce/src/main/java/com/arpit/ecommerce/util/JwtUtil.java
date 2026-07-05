@@ -20,11 +20,11 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    @PostConstruct
-    public void init(){
-        System.out.println("JWT Secret : " + secret);
-        System.out.println("JWT Expiration : " + expiration);
-    }
+//    @PostConstruct
+//    public void init(){
+//        System.out.println("JWT Secret : " + secret);
+//        System.out.println("JWT Expiration : " + expiration);
+//    }
 
     private SecretKey getSigningKey(){
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
@@ -54,6 +54,8 @@ public class JwtUtil {
         return extractExpiration(token).before(new Date());
     }
     public boolean validateToken(String token, String email){
-        return extractEmail(token).equals(email) && !isTokenExpired(token);
+        Claims claims = extractAllClaims(token);
+        return claims.getSubject().equals(email) && claims.getExpiration().after(new Date());
+//        return extractEmail(token).equals(email) && !isTokenExpired(token);
     }
 }
