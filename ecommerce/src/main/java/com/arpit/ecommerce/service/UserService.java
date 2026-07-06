@@ -39,6 +39,8 @@ public class UserService {
         user.setEmail(requestDTO.getEmail());
 //        user.setPassword(requestDTO.getPassword());
         user.setPassword(passwordEncoder.encode(requestDTO.getPassword()));
+        user.setRole("ROLE_USER");
+
         user = userRepository.save(user);
 
         UserResponseDTO userResponseDTO = new UserResponseDTO();
