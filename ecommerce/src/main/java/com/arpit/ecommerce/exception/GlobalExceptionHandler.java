@@ -38,4 +38,13 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(apiError,HttpStatus.UNAUTHORIZED);
         }
 
+        @ExceptionHandler(ProductNotFoundException.class)
+        public ResponseEntity<ApiError> handleProductNotFoundException(ProductNotFoundException ex){
+            ApiError apiError = new ApiError();
+            apiError.setTimestamp(LocalDateTime.now());
+            apiError.setStatus(HttpStatus.NOT_FOUND.value());
+            apiError.setMessage(ex.getMessage());
+            return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+            }
+
 }
