@@ -4,7 +4,6 @@
 ![Spring Boot](https://img.shields.io/badge/SpringBoot-3.x-brightgreen)
 ![JWT](https://img.shields.io/badge/Auth-JWT-blue)
 ![MySQL](https://img.shields.io/badge/Database-MySQL-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
 
 A production-ready RESTful E-Commerce Backend built using **Spring Boot**, following a layered architecture with **JWT Authentication**, **Role-Based Authorization**, **DTO Pattern**, **Global Exception Handling**, and **MySQL**.
 
