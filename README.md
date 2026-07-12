@@ -1,5 +1,17 @@
 # 🛒 E-Commerce Backend API
 
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/SpringBoot-3.x-brightgreen)
+![JWT](https://img.shields.io/badge/Auth-JWT-blue)
+![MySQL](https://img.shields.io/badge/Database-MySQL-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
+
+A production-ready RESTful E-Commerce Backend built using **Spring Boot**, following a layered architecture with **JWT Authentication**, **Role-Based Authorization**, **DTO Pattern**, **Global Exception Handling**, and **MySQL**.
+
+This project is being developed feature-by-feature using **GitHub Feature Branch Workflow** and **Pull Requests**.
+
+---
+
 A production-inspired RESTful E-Commerce Backend built using Spring Boot.
 
 The project follows modern backend development practices including layered architecture, DTO pattern, JWT authentication, role-based authorization, Bean Validation, global exception handling, and Spring Data JPA.
