@@ -47,4 +47,13 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
             }
 
+        @ExceptionHandler(CategoryNotFoundException.class)
+        public ResponseEntity<ApiError> handleCategoryNotFoundException(CategoryNotFoundException ex){
+            ApiError apiError = new ApiError();
+            apiError.setTimestamp(LocalDateTime.now());
+            apiError.setStatus(HttpStatus.NOT_FOUND.value());
+            apiError.setMessage(ex.getMessage());
+            return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+        }
+
 }
