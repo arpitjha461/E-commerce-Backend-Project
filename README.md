@@ -11,8 +11,6 @@ This project is being developed feature-by-feature using **GitHub Feature Branch
 
 ---
 
-A production-inspired RESTful E-Commerce Backend built using Spring Boot.
-
 The project follows modern backend development practices including layered architecture, DTO pattern, JWT authentication, role-based authorization, Bean Validation, global exception handling, and Spring Data JPA.
 
 It is being developed incrementally using feature branches, pull requests, and clean Git workflows to simulate a real software development lifecycle.
