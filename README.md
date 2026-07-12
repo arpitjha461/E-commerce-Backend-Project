@@ -1,9 +1,10 @@
 # 🛒 E-Commerce Backend API
 
-A production-ready RESTful E-Commerce Backend built using **Spring Boot**, following a layered architecture with **JWT Authentication**, **Role-Based Authorization**, **DTO Pattern**, **Global Exception Handling**, and **MySQL**.
+A production-inspired RESTful E-Commerce Backend built using Spring Boot.
 
-This project is being developed feature-by-feature using **GitHub Feature Branch Workflow** and **Pull Requests**.
+The project follows modern backend development practices including layered architecture, DTO pattern, JWT authentication, role-based authorization, Bean Validation, global exception handling, and Spring Data JPA.
 
+It is being developed incrementally using feature branches, pull requests, and clean Git workflows to simulate a real software development lifecycle.
 ---
 
 ## 🚀 Tech Stack
@@ -94,6 +95,16 @@ Implemented complete CRUD operations.
 
 ---
 
+## 📦 Category Module
+
+| Method | Endpoint | Description |
+|---------|----------|-------------|
+| POST | /categories | Create Category |
+| GET | /categories | Get All Categories |
+| GET | /categories/{id} | Get Category By ID |
+| PUT | /categories/{id} | Update Category |
+| DELETE | /categories/{id} | Delete Category |
+
 # ✅ Features Implemented
 
 - User CRUD
@@ -172,24 +183,47 @@ http://localhost:8765
 
 # 🧪 API Testing
 
-All APIs were tested using **Postman**.
+## 🧪 API Testing
+
+All APIs have been manually tested using Postman.
+
+The project includes:
+
+- Authentication APIs
+- User APIs
+- Product APIs
+- Category APIs
+
+JWT authentication is automatically managed using Postman Environment Variables.
 
 ---
 
-# 📌 Upcoming Modules
+## 🚀 Roadmap
 
-- Category Module
+- Product-Category Relationship
 - Cart Module
 - Order Module
 - Payment Module
-- Swagger Documentation
+- Swagger/OpenAPI
 - Docker
-- Unit Testing
+- Unit Testing (JUnit & Mockito)
 - AWS Deployment
-- CI/CD (GitHub Actions)
+- GitHub Actions (CI/CD)
 
 ---
 
+## 📊 Project Status
+
+| Module | Status |
+|---------|--------|
+| User Module | ✅ Completed |
+| Product Module | ✅ Completed |
+| Category Module | ✅ Completed |
+| Cart Module | ⏳ Planned |
+| Order Module | ⏳ Planned |
+| Payment Module | ⏳ Planned |
+
+---
 # 👨‍💻 Author
 
 **Arpit Vishwakarma**
