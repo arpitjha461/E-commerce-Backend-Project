@@ -239,7 +239,7 @@ JWT authentication is automatically managed using Postman Environment Variables.
 
 GitHub: https://github.com/arpitjha461
 
-LinkedIn: *(Add your LinkedIn profile here)*
+LinkedIn: *www.linkedin.com/in/arpitvishw*
 
 ---
 
