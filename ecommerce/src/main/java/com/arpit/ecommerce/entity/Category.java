@@ -2,6 +2,8 @@ package com.arpit.ecommerce.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "categories")
@@ -22,6 +24,9 @@ public class Category {
 
     @Column
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "category")
+    private List<Product> products = new ArrayList<>();
 
     @PrePersist
     public void onCreate(){
@@ -72,6 +77,13 @@ public class Category {
 
     public void setId(Long id) {
         this.id = id;
+    }
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 
 
