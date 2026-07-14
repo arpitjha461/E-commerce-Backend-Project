@@ -10,6 +10,15 @@ public class ProductResponseDTO {
     private BigDecimal price;
     private Integer stock;
     private String imageUrl;
+    private Long categoryId;
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
 
     public Long getId() {
         return id;
