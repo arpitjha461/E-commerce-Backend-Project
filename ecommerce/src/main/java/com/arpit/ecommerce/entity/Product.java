@@ -27,6 +27,10 @@ public class Product {
 
     private String imageUrl;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     public Long getId() {
         return id;
     }
@@ -89,6 +93,13 @@ public class Product {
 
     public void setUpdateAt(LocalDateTime updateAt) {
         this.updateAt = updateAt;
+    }
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     @Column(updatable = false)

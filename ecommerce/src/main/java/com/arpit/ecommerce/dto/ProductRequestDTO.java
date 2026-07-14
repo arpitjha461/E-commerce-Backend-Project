@@ -9,14 +9,17 @@ import java.math.BigDecimal;
 
 public class ProductRequestDTO {
 
+    @NotNull(message = "Category is required")
+    private Long categoryId;
+
     @NotBlank(message = "Product name is required")
     private String name;
 
     @NotBlank(message = "Description is required")
     private String description;
 
-    @NotNull(message = "price is required")
-    @DecimalMin(value = "0.01", message = "price must be more than zero")
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be more than zero")
     private BigDecimal price;
 
     @NotNull(message = "Stock is required")
@@ -25,36 +28,44 @@ public class ProductRequestDTO {
 
     private String imageUrl;
 
-    public @NotBlank(message = "Product name is required") String getName() {
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getName() {
         return name;
     }
 
-    public void setName(@NotBlank(message = "Product name is required") String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public @NotBlank(message = "Discription is required") String getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(@NotBlank(message = "Discription is required") String description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 
-    public @NotNull(message = "Stock is required") @PositiveOrZero(message = "Stock cannot be negative") Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(@NotNull(message = "Stock is required") @PositiveOrZero(message = "Stock cannot be negative") Integer stock) {
-        this.stock = stock;
-    }
-
-    public @NotNull(message = "price is required") @DecimalMin(value = "0.01", message = "price must be more than zero") BigDecimal getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(@NotNull(message = "price is required") @DecimalMin(value = "0.01", message = "price must be more than zero") BigDecimal price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
+    }
+
+    public Integer getStock() {
+        return stock;
+    }
+
+    public void setStock(Integer stock) {
+        this.stock = stock;
     }
 
     public String getImageUrl() {
