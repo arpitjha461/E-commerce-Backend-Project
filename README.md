@@ -210,7 +210,7 @@ JWT authentication is automatically managed using Postman Environment Variables.
 ## 🚀 Roadmap
 
 - Product-Category Relationship
-- Cart Module (working)
+- Cart Module (in progress)
 - Order Module
 - Payment Module
 - Swagger/OpenAPI
