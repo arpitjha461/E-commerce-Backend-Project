@@ -56,4 +56,29 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
         }
 
+        @ExceptionHandler(UserNotFoundException.class)
+        public ResponseEntity<ApiError> handleUserNotFoundException(UserNotFoundException ex){
+            ApiError apiError = new ApiError();
+            apiError.setTimestamp(LocalDateTime.now());
+            apiError.setStatus(HttpStatus.NOT_FOUND.value());
+            apiError.setMessage(ex.getMessage());
+            return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+        }
+
+//       handle all three exception in a single method
+//    @ExceptionHandler({
+//            ProductNotFoundException.class,
+//            CategoryNotFoundException.class,
+//            UserNotFoundException.class
+//    })
+//    public ResponseEntity<ApiError> handleNotFoundExceptions(RuntimeException ex) {
+//
+//        ApiError apiError = new ApiError();
+//        apiError.setTimestamp(LocalDateTime.now());
+//        apiError.setStatus(HttpStatus.NOT_FOUND.value());
+//        apiError.setMessage(ex.getMessage());
+//
+//        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+//    }
+
 }
