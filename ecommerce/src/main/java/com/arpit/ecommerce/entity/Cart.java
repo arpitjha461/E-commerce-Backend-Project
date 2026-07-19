@@ -3,11 +3,12 @@ package com.arpit.ecommerce.entity;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "carts")
-public class Cart {
+public class Cart{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,8 +30,8 @@ public class Cart {
         updatedAt = LocalDateTime.now();
     }
 
-    @OneToMany
-    private List<CartItem> cartItems;
+    @OneToMany(mappedBy = "cart")
+    private List<CartItem> cartItems = new ArrayList<>();
 
     public User getUser() {
         return user;
@@ -41,6 +42,7 @@ public class Cart {
     }
 
     @OneToOne
+    @JoinColumn(name ="user_id")
     private User user;
 
     public List<CartItem> getCartItems() {

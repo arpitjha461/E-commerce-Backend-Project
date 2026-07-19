@@ -33,7 +33,6 @@ public class CartService {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found having id: "+ productId));
-
 //        Cart cart = cartRepository.findByUser(user)
 //                .orElseGet(()-> {
 //                   Cart newCart =  new Cart();
@@ -63,7 +62,6 @@ public class CartService {
             cartItem.setQuantity(quantity);
             cartItemRepository.save(cartItem);
         }
-
         return "Product added to the cart successfully";
     }
 }
