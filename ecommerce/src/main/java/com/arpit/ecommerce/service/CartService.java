@@ -1,5 +1,6 @@
 package com.arpit.ecommerce.service;
 
+import com.arpit.ecommerce.dto.CartResponseDTO;
 import com.arpit.ecommerce.entity.Cart;
 import com.arpit.ecommerce.entity.CartItem;
 import com.arpit.ecommerce.entity.Product;
@@ -64,4 +65,32 @@ public class CartService {
         }
         return "Product added to the cart successfully";
     }
+
+    public CartResponseDTO getCart(Long userId){
+        User user = userRepository.findById(userId)
+                .orElseThrow(()-> new UserNotFoundException("User not found having id: "+userId));
+
+
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
