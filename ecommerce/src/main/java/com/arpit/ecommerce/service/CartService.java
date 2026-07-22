@@ -1,5 +1,6 @@
 package com.arpit.ecommerce.service;
 
+import com.arpit.ecommerce.dto.CartItemResponseDTO;
 import com.arpit.ecommerce.dto.CartResponseDTO;
 import com.arpit.ecommerce.entity.Cart;
 import com.arpit.ecommerce.entity.CartItem;
@@ -14,6 +15,8 @@ import com.arpit.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -69,6 +72,33 @@ public class CartService {
     public CartResponseDTO getCart(Long userId){
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new UserNotFoundException("User not found having id: "+userId));
+        Optional<Cart> optionalCart =  cartRepository.findByUser(user);
+
+        if (optionalCart.isEmpty()){
+            CartResponseDTO responseDTO = new CartResponseDTO();
+            responseDTO.setCartId(null);
+            responseDTO.setTotalItems(0);
+            responseDTO.setTotalAmount(0.0);
+            responseDTO.setItems(new ArrayList<>());
+            return responseDTO;
+        }
+        Cart cart = optionalCart.get();
+        List<CartItem> cartItems = cart.getCartItems();
+
+        CartResponseDTO cartResponseDTO = new CartResponseDTO();
+        List<CartItemResponseDTO> items = new ArrayList<>();
+
+        int totalItems =0;
+        double totalAmount =0.0;
+
+        for (CartItem cartItem : cartItems){
+            CartItemResponseDTO itemDTO = new CartItemResponseDTO();
+            itemDTO.setProductId(cartItem.getId());
+            itemDTO.setProductName(cartItem.getProduct().getName());
+            itemDTO.setQuantity(cartItem.getQuantity());
+            itemDTO.setPrice(cartItem.getProduct().getPrice());
+
+        }
 
 
     }

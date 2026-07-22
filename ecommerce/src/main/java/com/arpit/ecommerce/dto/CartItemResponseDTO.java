@@ -1,12 +1,14 @@
 package com.arpit.ecommerce.dto;
 
+import java.math.BigDecimal;
+
 public class CartItemResponseDTO {
 
     private Long productId;
     private String productName;
-    private Double price;
     private Integer quantity;
-    private Double subtotal;
+    private BigDecimal price;
+    private BigDecimal subtotal;
 
     public Long getProductId() {
         return productId;
@@ -24,11 +26,11 @@ public class CartItemResponseDTO {
         this.productName = productName;
     }
 
-    public Double getPrice() {
+    public BigDecimal getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
@@ -40,11 +42,11 @@ public class CartItemResponseDTO {
         this.quantity = quantity;
     }
 
-    public Double getSubtotal() {
+    public BigDecimal getSubtotal() {
         return subtotal;
     }
 
-    public void setSubtotal(Double subtotal) {
+    public void setSubtotal(BigDecimal subtotal) {
         this.subtotal = subtotal;
     }
 }
