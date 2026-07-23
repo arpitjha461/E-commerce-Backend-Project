@@ -1,12 +1,13 @@
 package com.arpit.ecommerce.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public class CartResponseDTO {
 
     private Long cartId;
     private Integer totalItems;
-    private Double totalAmount;
+    private BigDecimal totalAmount;
     private List<CartItemResponseDTO> items;
 
     public Long getCartId() {
@@ -25,11 +26,11 @@ public class CartResponseDTO {
         this.totalItems = totalItems;
     }
 
-    public Double getTotalAmount() {
+    public BigDecimal getTotalAmount() {
         return totalAmount;
     }
 
-    public void setTotalAmount(Double totalAmount) {
+    public void setTotalAmount(BigDecimal totalAmount) {
         this.totalAmount = totalAmount;
     }
 

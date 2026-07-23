@@ -15,6 +15,7 @@ import com.arpit.ecommerce.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -78,7 +79,7 @@ public class CartService {
             CartResponseDTO responseDTO = new CartResponseDTO();
             responseDTO.setCartId(null);
             responseDTO.setTotalItems(0);
-            responseDTO.setTotalAmount(0.0);
+            responseDTO.setTotalAmount(BigDecimal.ZERO);
             responseDTO.setItems(new ArrayList<>());
             return responseDTO;
         }
@@ -88,19 +89,33 @@ public class CartService {
         CartResponseDTO cartResponseDTO = new CartResponseDTO();
         List<CartItemResponseDTO> items = new ArrayList<>();
 
-        int totalItems =0;
-        double totalAmount =0.0;
+        int totalItems=0;
+        BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (CartItem cartItem : cartItems){
             CartItemResponseDTO itemDTO = new CartItemResponseDTO();
-            itemDTO.setProductId(cartItem.getId());
+
+            itemDTO.setProductId(cartItem.getProduct().getId());
             itemDTO.setProductName(cartItem.getProduct().getName());
             itemDTO.setQuantity(cartItem.getQuantity());
             itemDTO.setPrice(cartItem.getProduct().getPrice());
 
+            BigDecimal subTotal = cartItem.getProduct()
+                    .getPrice()
+                    .multiply(BigDecimal.valueOf(cartItem.getQuantity()));
+            itemDTO.setSubtotal(subTotal);
+
+            totalItems += cartItem.getQuantity();
+            totalAmount = totalAmount.add(subTotal);
+
+            items.add(itemDTO);
         }
+        cartResponseDTO.setCartId(cart.getId());
+        cartResponseDTO.setTotalItems(totalItems);
+        cartResponseDTO.setTotalAmount(totalAmount);
+        cartResponseDTO.setItems(items);
 
-
+        return cartResponseDTO;
     }
 }
 
