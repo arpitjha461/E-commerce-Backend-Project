@@ -134,14 +134,6 @@ Features
 - Uses proper JPA relationships
 - Clean service layer implementation
 
-### 🚧 In Progress
-
-- Get Cart API
-- Update Cart Quantity
-- Remove Cart Item
-- Clear Cart
-
----
 
 # 🗄 Database Relationships
 
