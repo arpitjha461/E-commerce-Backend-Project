@@ -7,7 +7,6 @@
 ![Hibernate](https://img.shields.io/badge/Hibernate-JPA-brown)
 ![MySQL](https://img.shields.io/badge/Database-MySQL-blue)
 ![Maven](https://img.shields.io/badge/Build-Maven-red)
-![License](https://img.shields.io/badge/License-MIT-lightgrey)
 
 A production-style **RESTful E-Commerce Backend** built using **Spring Boot** following enterprise development practices such as **Layered Architecture**, **JWT Authentication**, **Role-Based Authorization**, **DTO Pattern**, **Global Exception Handling**, **Bean Validation**, and **Spring Data JPA**.
 
