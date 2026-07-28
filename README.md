@@ -293,6 +293,7 @@ http://localhost:8765
 
 # 🚀 Upcoming Features
 
+- get Cart Item
 - Update Cart Quantity
 - Remove Cart Item
 - Clear Cart
