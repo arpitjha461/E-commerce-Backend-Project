@@ -17,5 +17,6 @@ public class UpdateCartQuantityRequestDTO {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
 }
 

@@ -2,6 +2,7 @@ package com.arpit.ecommerce.controller;
 
 import com.arpit.ecommerce.dto.AddToCartRequestDTO;
 import com.arpit.ecommerce.dto.CartResponseDTO;
+import com.arpit.ecommerce.dto.UpdateCartQuantityRequestDTO;
 import com.arpit.ecommerce.service.CartService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +27,12 @@ public class CartController {
     @GetMapping("/{userid}")
     public ResponseEntity<CartResponseDTO> getCart(@PathVariable Long userid){
         return ResponseEntity.ok(cartService.getCart(userid));
+    }
+
+    @PutMapping("/items/{cartItemId}")
+    public ResponseEntity<String> updateCartQuantity(@PathVariable Long cartItemId,
+                  @Valid @RequestBody UpdateCartQuantityRequestDTO requestDTO){
+       String response = cartService.updateCartQuantity(cartItemId, requestDTO);
+       return ResponseEntity.ok(response);
     }
 }

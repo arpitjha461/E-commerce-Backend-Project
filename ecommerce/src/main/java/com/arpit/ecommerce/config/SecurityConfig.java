@@ -36,6 +36,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/categories/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/categories/**").hasRole("ADMIN")
 
+                        // Cart APIs
+
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

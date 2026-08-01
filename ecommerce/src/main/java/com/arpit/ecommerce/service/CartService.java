@@ -2,10 +2,12 @@ package com.arpit.ecommerce.service;
 
 import com.arpit.ecommerce.dto.CartItemResponseDTO;
 import com.arpit.ecommerce.dto.CartResponseDTO;
+import com.arpit.ecommerce.dto.UpdateCartQuantityRequestDTO;
 import com.arpit.ecommerce.entity.Cart;
 import com.arpit.ecommerce.entity.CartItem;
 import com.arpit.ecommerce.entity.Product;
 import com.arpit.ecommerce.entity.User;
+import com.arpit.ecommerce.exception.CartItemNotFoundException;
 import com.arpit.ecommerce.exception.ProductNotFoundException;
 import com.arpit.ecommerce.exception.UserNotFoundException;
 import com.arpit.ecommerce.repository.CartItemRepository;
@@ -117,6 +119,22 @@ public class CartService {
 
         return cartResponseDTO;
     }
+
+    public String updateCartQuantity(Long cartItemId, UpdateCartQuantityRequestDTO requestDTO){
+
+        CartItem cartItem = cartItemRepository.findById(cartItemId)
+                .orElseThrow(() ->new CartItemNotFoundException(
+                                "Cart item not found having id: " + cartItemId));
+
+        if (requestDTO.getQuantity()==0){
+            cartItemRepository.delete(cartItem);
+            return "car tItem removed successfully";
+        }
+
+        cartItem.setQuantity(requestDTO.getQuantity());
+        cartItemRepository.save(cartItem);
+        return "car tItem updated successfully";
+        }
 }
 
 
