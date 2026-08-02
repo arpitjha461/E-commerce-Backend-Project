@@ -80,5 +80,13 @@ public class GlobalExceptionHandler {
 //
 //        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
 //    }
+        @ExceptionHandler(CartItemNotFoundException.class)
+        public ResponseEntity<ApiError> handleCartItemNotFoundException(CartItemNotFoundException ex){
+            ApiError apiError = new ApiError();
+            apiError.setTimestamp(LocalDateTime.now());
+            apiError.setMessage(ex.getMessage());
+            apiError.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        }
 
 }

@@ -9,6 +9,13 @@ public class CartItemResponseDTO {
     private Integer quantity;
     private BigDecimal price;
     private BigDecimal subtotal;
+    private Long cartItemId;
+
+    public Long getCartItemId() { return cartItemId;}
+
+    public void setCartItemId(Long cartItemId) {
+        this.cartItemId = cartItemId;
+    }
 
     public Long getProductId() {
         return productId;
