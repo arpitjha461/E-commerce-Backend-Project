@@ -80,6 +80,7 @@ public class CartService {
         if (optionalCart.isEmpty()){
             CartResponseDTO responseDTO = new CartResponseDTO();
             responseDTO.setCartId(null);
+            responseDTO.setCartId(null);
             responseDTO.setTotalItems(0);
             responseDTO.setTotalAmount(BigDecimal.ZERO);
             responseDTO.setItems(new ArrayList<>());
@@ -96,11 +97,11 @@ public class CartService {
 
         for (CartItem cartItem : cartItems){
             CartItemResponseDTO itemDTO = new CartItemResponseDTO();
-
             itemDTO.setProductId(cartItem.getProduct().getId());
             itemDTO.setProductName(cartItem.getProduct().getName());
             itemDTO.setQuantity(cartItem.getQuantity());
             itemDTO.setPrice(cartItem.getProduct().getPrice());
+            itemDTO.setCartItemId(cartItem.getId());
 
             BigDecimal subTotal = cartItem.getProduct()
                     .getPrice()
@@ -135,6 +136,14 @@ public class CartService {
         cartItemRepository.save(cartItem);
         return "car tItem updated successfully";
         }
+
+    public String removeCartItem(Long cartItemId){
+        CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(
+                ()-> new CartItemNotFoundException("Cart item not found having id: "+cartItemId));
+
+        cartItemRepository.delete(cartItem);
+        return "Cart item removed successfully";
+    }
 }
 
 
