@@ -283,8 +283,8 @@ http://localhost:8765
 | Product Module | ✅ Completed |
 | Category Module | ✅ Completed |
 | Product-Category Relationship | ✅ Completed |
-| Cart Module - getCart | 🚧 In Progress |
-| Order Module | ⏳ Planned |
+| Cart Module - getCart | ✅ Completed |
+| Order Module | 🚧 In Progress |
 | Payment Module | ⏳ Planned |
 | Wishlist | ⏳ Planned |
 | Reviews | ⏳ Planned |
@@ -293,9 +293,6 @@ http://localhost:8765
 
 # 🚀 Upcoming Features
 
-- get Cart Item
-- Update Cart Quantity
-- Remove Cart Item
 - Clear Cart
 - Wishlist
 - Address Module
