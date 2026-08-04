@@ -32,6 +32,8 @@ public class CartService {
     private CartRepository cartRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
+    @Autowired
+    private Cart cart;
 
     public String addToCart(Long userId, Long productId, Integer quantity){
 
@@ -143,6 +145,18 @@ public class CartService {
 
         cartItemRepository.delete(cartItem);
         return "Cart item removed successfully";
+    }
+
+    public String clearCart(Long userId){
+        User user = userRepository.findById(userId).orElseThrow(
+                ()-> new UserNotFoundException("User not found having ID: "+userId));
+
+        Cart cart = cartRepository.findByUser(user).orElse(null);
+        if (cart==null || cart.getCartItems().isEmpty()){
+            return "Cart is already empty";
+        }
+        cartItemRepository.deleteAll(cart.getCartItems());
+        return "Cart cleared successfully";
     }
 }
 
