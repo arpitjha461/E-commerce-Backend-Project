@@ -1,16 +1,32 @@
-package com.arpit.ecommerce.dto;
+package com.arpit.ecommerce.dto.request;
+
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 import java.math.BigDecimal;
 
-public class ProductResponseDTO {
+public class ProductRequestDTO {
 
-    private Long id;
-    private String name;
-    private String description;
-    private BigDecimal price;
-    private Integer stock;
-    private String imageUrl;
+    @NotNull(message = "Category is required")
     private Long categoryId;
+
+    @NotBlank(message = "Product name is required")
+    private String name;
+
+    @NotBlank(message = "Description is required")
+    private String description;
+
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be more than zero")
+    private BigDecimal price;
+
+    @NotNull(message = "Stock is required")
+    @PositiveOrZero(message = "Stock cannot be negative")
+    private Integer stock;
+
+    private String imageUrl;
 
     public Long getCategoryId() {
         return categoryId;
@@ -18,14 +34,6 @@ public class ProductResponseDTO {
 
     public void setCategoryId(Long categoryId) {
         this.categoryId = categoryId;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {

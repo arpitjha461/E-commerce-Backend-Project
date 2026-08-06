@@ -1,7 +1,7 @@
 package com.arpit.ecommerce.service;
 
-import com.arpit.ecommerce.dto.CategoryRequestDTO;
-import com.arpit.ecommerce.dto.CategoryResponseDTO;
+import com.arpit.ecommerce.dto.request.CategoryRequestDTO;
+import com.arpit.ecommerce.dto.response.CategoryResponseDTO;
 import com.arpit.ecommerce.entity.Category;
 import com.arpit.ecommerce.exception.CategoryNotFoundException;
 import com.arpit.ecommerce.repository.CategoryRepository;

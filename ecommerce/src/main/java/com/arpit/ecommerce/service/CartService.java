@@ -1,8 +1,8 @@
 package com.arpit.ecommerce.service;
 
-import com.arpit.ecommerce.dto.CartItemResponseDTO;
-import com.arpit.ecommerce.dto.CartResponseDTO;
-import com.arpit.ecommerce.dto.UpdateCartQuantityRequestDTO;
+import com.arpit.ecommerce.dto.response.CartItemResponseDTO;
+import com.arpit.ecommerce.dto.response.CartResponseDTO;
+import com.arpit.ecommerce.dto.request.UpdateCartQuantityRequestDTO;
 import com.arpit.ecommerce.entity.Cart;
 import com.arpit.ecommerce.entity.CartItem;
 import com.arpit.ecommerce.entity.Product;
@@ -32,8 +32,6 @@ public class CartService {
     private CartRepository cartRepository;
     @Autowired
     private CartItemRepository cartItemRepository;
-    @Autowired
-    private Cart cart;
 
     public String addToCart(Long userId, Long productId, Integer quantity){
 
