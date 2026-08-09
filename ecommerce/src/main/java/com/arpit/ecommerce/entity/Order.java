@@ -2,6 +2,8 @@ package com.arpit.ecommerce.entity;
 
 import com.arpit.ecommerce.enums.OrderStatus;
 import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,18 +16,20 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> orderItems;           // One Order contains many OrderItems
-                                                 // Parent → Children = @OneToMany
-                                                // Child → Parent = @ManyToOne
+    @OneToMany(mappedBy = "order",cascade = CascadeType.ALL,orphanRemoval = true)             // One Order contains many OrderItems
+    private List<OrderItem> orderItems;       // Parent → Children = @OneToMany
+                                             // Child → Parent = @ManyToOne
     private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
+    @CreationTimestamp
     private LocalDateTime createdAt;
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 }
