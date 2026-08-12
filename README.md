@@ -284,7 +284,7 @@ http://localhost:8765
 | Category Module | ✅ Completed |
 | Product-Category Relationship | ✅ Completed |
 | Cart Module - getCart | ✅ Completed |
-| Order Module | 🚧 In Progress |
+| Order Module | 🚧 In Progress added response |
 | Payment Module | ⏳ Planned |
 | Wishlist | ⏳ Planned |
 | Reviews | ⏳ Planned |
