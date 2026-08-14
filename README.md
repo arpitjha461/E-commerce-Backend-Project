@@ -1,330 +1,705 @@
-# 🛒 E-Commerce Backend API
+# 🛒 E-Commerce Backend
 
-![Java](https://img.shields.io/badge/Java-21-orange)
-![Spring Boot](https://img.shields.io/badge/SpringBoot-3.x-brightgreen)
-![Spring Security](https://img.shields.io/badge/Spring%20Security-6.x-green)
-![JWT](https://img.shields.io/badge/Auth-JWT-blue)
-![Hibernate](https://img.shields.io/badge/Hibernate-JPA-brown)
-![MySQL](https://img.shields.io/badge/Database-MySQL-blue)
-![Maven](https://img.shields.io/badge/Build-Maven-red)
+A RESTful e-commerce backend application built using **Java, Spring Boot, Spring Security, JWT, Spring Data JPA, and MySQL**.
 
-A production-style **RESTful E-Commerce Backend** built using **Spring Boot** following enterprise development practices such as **Layered Architecture**, **JWT Authentication**, **Role-Based Authorization**, **DTO Pattern**, **Global Exception Handling**, **Bean Validation**, and **Spring Data JPA**.
-
-This project is being developed feature-by-feature using **Git Feature Branch Workflow**, **Pull Requests**, and clean commit history to simulate a real software development lifecycle.
+The project follows a layered architecture and is being developed feature-by-feature using Git feature branches.
 
 ---
 
-# 🚀 Tech Stack
+## 🚀 Project Status
 
-- Java 21
-- Spring Boot
-- Spring Security
-- JWT Authentication
-- Spring Data JPA
-- Hibernate
-- MySQL
-- Maven
-- Postman
-- Git & GitHub
+| Module                   | Status         |
+| ------------------------ | -------------- |
+| User Management          | ✅ Completed    |
+| Authentication & JWT     | ✅ Completed    |
+| Role-Based Authorization | ✅ Completed    |
+| Category Management      | ✅ Completed    |
+| Product Management       | ✅ Completed    |
+| Cart Management          | ✅ Completed    |
+| Order Module             | 🚧 In Progress |
+| Payment Module           | ⏳ Planned      |
+| Inventory Management     | ⏳ Planned      |
+| MongoDB Integration      | ⏳ Planned      |
+| Swagger/OpenAPI          | ⏳ Planned      |
+| Unit Testing             | ⏳ Planned      |
+| Docker                   | ⏳ Planned      |
+| CI/CD                    | ⏳ Planned      |
+| AWS Deployment           | ⏳ Planned      |
 
 ---
 
-# 🏗 Project Architecture
+# 🏗️ Architecture
 
-```
-                Client
-                   │
-                   ▼
-            REST Controller
-                   │
-                   ▼
-             Service Layer
-                   │
-                   ▼
-           Repository Layer
-                   │
-                   ▼
-              MySQL Database
+The application follows a layered Spring Boot architecture:
+
+```text
+Controller
+    ↓
+Service
+    ↓
+Repository
+    ↓
+Database
 ```
 
-The project follows a layered architecture.
+Additional layers:
 
-- **Controller** → Handles HTTP Requests & Responses
-- **Service** → Business Logic
-- **Repository** → Database Operations
-- **DTO** → Request & Response Objects
-- **Entity** → Database Tables
-- **Exception** → Global Exception Handling
-
----
-
-# 🔐 Authentication & Authorization
-
-Implemented using **Spring Security + JWT**.
-
-### Features
-
-- User Registration
-- User Login
-- BCrypt Password Encryption
-- JWT Token Generation
-- JWT Authentication Filter
-- Stateless Authentication
-- Role-Based Authorization
-
-### Roles
-
-- ROLE_ADMIN
-- ROLE_USER
+```text
+DTO
+Exception Handling
+Security
+Entity
+Validation
+```
 
 ---
 
-# 📦 User Module
+# 🛠️ Technologies Used
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/users/register` | Register User |
-| POST | `/users/login` | Login User |
-| GET | `/users` | Get All Users |
-| GET | `/users/{id}` | Get User By ID |
-| PUT | `/users/{id}` | Update User |
-| DELETE | `/users/{id}` | Delete User |
+* Java
+* Spring Boot
+* Spring Web
+* Spring Data JPA
+* Spring Security
+* JWT Authentication
+* Hibernate
+* MySQL
+* Jakarta Validation
+* Maven
+* Git & GitHub
+* Postman
+
+### Planned Technologies
+
+* MongoDB
+* Docker
+* Swagger / OpenAPI
+* JUnit
+* Mockito
+* GitHub Actions
+* AWS
+
+---
+
+# 📂 Project Structure
+
+```text
+src/
+└── main/
+    └── java/
+        └── com/
+            └── arpit/
+                └── ecommerce/
+                    │
+                    ├── config/
+                    │   └── SecurityConfig.java
+                    │
+                    ├── controller/
+                    │   ├── UserController.java
+                    │   ├── CategoryController.java
+                    │   ├── ProductController.java
+                    │   ├── CartController.java
+                    │   └── OrderController.java
+                    │
+                    ├── dto/
+                    │   ├── request/
+                    │   │   ├── AddToCartRequestDTO.java
+                    │   │   └── UpdateCartQuantityRequestDTO.java
+                    │   │
+                    │   └── response/
+                    │       ├── CartResponseDTO.java
+                    │       ├── CartItemResponseDTO.java
+                    │       ├── OrderResponseDTO.java
+                    │       └── OrderItemResponseDTO.java
+                    │
+                    ├── entity/
+                    │   ├── User.java
+                    │   ├── Category.java
+                    │   ├── Product.java
+                    │   ├── Cart.java
+                    │   ├── CartItem.java
+                    │   ├── Order.java
+                    │   └── OrderItem.java
+                    │
+                    ├── enums/
+                    │   └── OrderStatus.java
+                    │
+                    ├── exception/
+                    │   ├── GlobalExceptionHandler.java
+                    │   ├── UserNotFoundException.java
+                    │   ├── ProductNotFoundException.java
+                    │   ├── CategoryNotFoundException.java
+                    │   ├── CartItemNotFoundException.java
+                    │   └── InvalidCredentialsException.java
+                    │
+                    ├── repository/
+                    │   ├── UserRepository.java
+                    │   ├── CategoryRepository.java
+                    │   ├── ProductRepository.java
+                    │   ├── CartRepository.java
+                    │   ├── CartItemRepository.java
+                    │   ├── OrderRepository.java
+                    │   └── OrderItemRepository.java
+                    │
+                    ├── security/
+                    │   └── JwtAuthenticationFilter.java
+                    │
+                    ├── service/
+                    │   ├── CustomUserDetailsService.java
+                    │   ├── UserService.java
+                    │   ├── CategoryService.java
+                    │   ├── ProductService.java
+                    │   ├── CartService.java
+                    │   └── OrderService.java
+                    │
+                    └── util/
+                        └── JwtUtil.java
+```
+
+---
+
+# 🔐 Authentication & Security
+
+The application uses **JWT-based authentication** with Spring Security.
+
+### Authentication Flow
+
+```text
+User Login
+    ↓
+Validate Credentials
+    ↓
+Generate JWT
+    ↓
+Client Stores Token
+    ↓
+Client Sends:
+Authorization: Bearer <token>
+    ↓
+JwtAuthenticationFilter
+    ↓
+Validate JWT
+    ↓
+Authenticate User
+    ↓
+Access Protected API
+```
+
+Public APIs currently include:
+
+```text
+POST /users/register
+POST /users/login
+```
+
+Protected APIs require authentication.
+
+Role-based authorization is also implemented for administrative operations.
+
+---
+
+# 👤 User Module
+
+The User module provides:
+
+* User registration
+* User login
+* Password encryption using BCrypt
+* JWT authentication
+* Role-based authorization
+* User lookup
+* User deletion for authorized administrators
 
 ---
 
 # 📦 Product Module
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/products` | Create Product |
-| GET | `/products` | Get All Products |
-| GET | `/products/{id}` | Get Product By ID |
-| PUT | `/products/{id}` | Update Product |
-| DELETE | `/products/{id}` | Delete Product |
+The Product module provides product management functionality.
+
+Main operations include:
+
+```text
+Create Product
+Get Product
+Get Products
+Update Product
+Delete Product
+```
+
+Products are associated with categories.
 
 ---
 
-# 📂 Category Module
+# 🗂️ Category Module
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/categories` | Create Category |
-| GET | `/categories` | Get All Categories |
-| GET | `/categories/{id}` | Get Category By ID |
-| PUT | `/categories/{id}` | Update Category |
-| DELETE | `/categories/{id}` | Delete Category |
+Category management supports:
+
+```text
+Create Category
+Get Categories
+Update Category
+Delete Category
+```
+
+Administrative operations are protected using Spring Security roles.
 
 ---
 
 # 🛒 Cart Module
 
-### ✅ Implemented
+The Cart module is **completed**.
 
-### Add Product to Cart
+### Features
 
-**POST** `/cart/add`
+* Add product to cart
+* Get user's cart
+* Update cart quantity
+* Remove individual cart item
+* Clear entire cart
+* Validation
+* Cart-item exception handling
 
-Features
+### Add Product
 
-- Automatically creates cart for first-time users
-- Adds product to cart
-- Updates quantity if product already exists
-- Prevents duplicate cart items
-- Uses proper JPA relationships
-- Clean service layer implementation
-
-
-# 🗄 Database Relationships
-
-## User ↔ Cart
-
+```http
+POST /cart/add
 ```
+
+Example request:
+
+```json
+{
+  "userId": 26,
+  "productId": 6,
+  "quantity": 2
+}
+```
+
+### Get Cart
+
+```http
+GET /cart/{userId}
+```
+
+### Update Cart Quantity
+
+```http
+PUT /cart/item/{cartItemId}
+```
+
+Example:
+
+```json
+{
+  "quantity": 3
+}
+```
+
+If quantity is `0`, the cart item is removed.
+
+### Remove Cart Item
+
+```http
+DELETE /cart/items/{cartItemId}
+```
+
+### Clear Cart
+
+```http
+DELETE /cart/{userId}/items
+```
+
+The cart itself is preserved; its `CartItem` records are removed.
+
+---
+
+# 📦 Order Module
+
+The Order module is currently **in development**.
+
+### Current Design
+
+```text
 User
-   │
-   └────── OneToOne ────── Cart
+  │
+  │ 1
+  ▼
+Order
+  │
+  │ 1:N
+  ▼
+OrderItem
+  │
+  │ N:1
+  ▼
+Product
+```
+
+### Order Status
+
+The project uses the following order lifecycle:
+
+```text
+PENDING
+    ↓
+PROCESSING
+    ↓
+CONFIRMED
+    ↓
+SHIPPED
+    ↓
+OUT_FOR_DELIVERY
+    ↓
+DELIVERED
+```
+
+Other possible states:
+
+```text
+CANCELLED
+RETURNED
+REFUNDED
+```
+
+### Order Entity
+
+An order contains:
+
+```text
+id
+user
+orderItems
+totalAmount
+status
+createdAt
+updatedAt
+```
+
+### OrderItem Entity
+
+An order item contains:
+
+```text
+id
+order
+product
+quantity
+price
+```
+
+`OrderItem.price` stores the **historical purchase price** used when the order was created, rather than relying on the product's current price.
+
+### Order Relationships
+
+```text
+Order
+ ├── OrderItem
+ ├── OrderItem
+ └── OrderItem
+```
+
+Therefore:
+
+```java
+Order → OrderItem
+@OneToMany
+```
+
+and:
+
+```java
+OrderItem → Order
+@ManyToOne
+```
+
+Similarly, multiple order items can reference the same product:
+
+```java
+OrderItem → Product
+@ManyToOne
 ```
 
 ---
 
-## Cart ↔ CartItem
+# 🧾 Order Processing Flow
 
+The planned checkout flow is:
+
+```text
+Authenticated User
+        ↓
+Find User
+        ↓
+Find User's Cart
+        ↓
+Get CartItems
+        ↓
+Check Cart
+        ↓
+Create Order
+        ↓
+Create OrderItems
+        ↓
+Calculate Total Amount
+        ↓
+Save Order
+        ↓
+Clear Cart
+        ↓
+Return Order Response
 ```
-Cart
-   │
-   └────── OneToMany ────── CartItem
+
+The complete checkout operation will use:
+
+```java
+@Transactional
 ```
+
+so that the database operations are handled as a single transaction.
 
 ---
 
-## Product ↔ Category
+# 💰 Money Handling
 
+The project uses:
+
+```java
+BigDecimal
 ```
-Category
-      │
-      └────── OneToMany ────── Product
+
+for monetary values instead of `double` or `float`.
+
+Examples:
+
+```java
+private BigDecimal price;
+
+private BigDecimal totalAmount;
 ```
+
+This avoids floating-point precision problems when dealing with financial values.
 
 ---
 
-## CartItem ↔ Product
+# 🧩 DTO Architecture
 
+DTOs are separated into request and response packages:
+
+```text
+dto/
+├── request/
+└── response/
 ```
-CartItem
-      │
-      └────── ManyToOne ────── Product
+
+This keeps the API contract separate from database entities.
+
+For example:
+
+```text
+AddToCartRequestDTO
+UpdateCartQuantityRequestDTO
 ```
+
+are request DTOs.
+
+While:
+
+```text
+CartResponseDTO
+CartItemResponseDTO
+OrderResponseDTO
+OrderItemResponseDTO
+```
+
+are response DTOs.
 
 ---
 
-# ✅ Features Implemented
+# ⚠️ Global Exception Handling
 
-- JWT Authentication
-- Role-Based Authorization
-- User Registration & Login
-- User CRUD
-- Product CRUD
-- Category CRUD
-- Product ↔ Category Relationship
-- Cart ↔ CartItem Relationship
-- Add Product to Cart API
-- DTO Pattern
-- Bean Validation
-- Global Exception Handling
-- Custom Exceptions
-- BCrypt Password Encryption
-- Repository Pattern
-- Layered Architecture
-- Feature Branch Workflow
-- Pull Request Workflow
+The application uses:
+
+```java
+@ControllerAdvice
+```
+
+for centralized exception handling.
+
+Validation errors are handled using:
+
+```java
+MethodArgumentNotValidException
+```
+
+and application-specific exceptions include:
+
+```text
+UserNotFoundException
+ProductNotFoundException
+CategoryNotFoundException
+CartItemNotFoundException
+InvalidCredentialsException
+```
+
+API errors are returned using the common:
+
+```text
+ApiError
+```
+
+response structure.
 
 ---
 
-# 📁 Project Structure
+# 🔄 Git Branching Strategy
 
+The project uses feature branches.
+
+Example:
+
+```text
+main
+ │
+ ├── feature/user-module
+ ├── feature/product-module
+ ├── feature/category-module
+ ├── feature/cart-module
+ └── feature/order-module
 ```
-src
-└── main
-    ├── controller
-    ├── service
-    ├── repository
-    ├── entity
-    ├── dto
-    ├── config
-    ├── security
-    ├── exception
-    ├── payload
-    └── util
+
+Current development branch:
+
+```text
+feature/order-module
+```
+
+Typical workflow:
+
+```bash
+git checkout main
+git pull origin main
+
+git checkout -b feature/<feature-name>
+
+git add .
+git commit -m "Implement <feature>"
+
+git push -u origin feature/<feature-name>
 ```
 
 ---
 
 # 🧪 API Testing
 
-All APIs are manually tested using **Postman**.
+APIs are tested using **Postman**.
 
-Implemented collections include:
+Testing includes:
 
-- Authentication APIs
-- User APIs
-- Product APIs
-- Category APIs
-- Cart APIs
-
-JWT authentication is managed using **Postman Environment Variables**.
-
----
-
-# ⚙️ Setup
-
-### Clone Repository
-
-```bash
-git clone https://github.com/arpitjha461/E-commerce-Backend-Project.git
-```
-
-### Open Project
-
-Import as Maven Project
-
-### Configure Database
-
-Update `application.properties`
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/ecommerce_db
-spring.datasource.username=YOUR_USERNAME
-spring.datasource.password=YOUR_PASSWORD
-
-spring.jpa.hibernate.ddl-auto=update
-```
-
-### Run Application
-
-Run
-
-```
-EcommerceApplication.java
-```
-
-Application starts at
-
-```
-http://localhost:8765
-```
+* Successful requests
+* Validation failures
+* Authentication failures
+* Authorization failures
+* Not-found scenarios
+* Cart operations
+* Order workflow
 
 ---
 
-# 📊 Project Status
+# 🔮 Future Enhancements
 
-| Module | Status |
-|---------|--------|
-| Authentication | ✅ Completed |
-| User Module | ✅ Completed |
-| Product Module | ✅ Completed |
-| Category Module | ✅ Completed |
-| Product-Category Relationship | ✅ Completed |
-| Cart Module - getCart | ✅ Completed |
-| Order Module | 🚧 In Progress added responsedto |
-| Payment Module | ⏳ Planned |
-| Wishlist | ⏳ Planned |
-| Reviews | ⏳ Planned |
+After completing the core e-commerce functionality, the following features are planned:
+
+### MongoDB
+
+MongoDB will be used alongside MySQL for use cases such as:
+
+```text
+Activity Logs
+Audit Logs
+Order Events
+User Activity
+```
+
+The same transactional data will not simply be duplicated across both databases.
+
+### Redis
+
+Planned use:
+
+```text
+Caching
+Product lookup optimization
+Session-related use cases
+```
+
+### Messaging
+
+Potential future integration:
+
+```text
+Kafka / RabbitMQ
+```
+
+for event-driven processing.
+
+### Search
+
+Potential integration:
+
+```text
+Elasticsearch
+```
+
+for advanced product search.
+
+### DevOps
+
+Planned:
+
+```text
+Docker
+GitHub Actions
+AWS Deployment
+```
+
+### Testing
+
+Planned:
+
+```text
+JUnit
+Mockito
+Integration Testing
+```
+
+### API Documentation
+
+Planned:
+
+```text
+Swagger / OpenAPI
+```
 
 ---
 
-# 🚀 Upcoming Features
+# 🎯 Project Goals
 
-- Clear Cart
-- Wishlist
-- Address Module
-- Order Management
-- Payment Integration
-- Product Reviews
-- Swagger / OpenAPI
-- Docker
-- Unit Testing (JUnit + Mockito)
-- GitHub Actions (CI/CD)
-- AWS Deployment
+The goal of this project is not only to implement CRUD APIs but to demonstrate practical backend development concepts including:
 
----
-
-# 📚 Learning Outcomes
-
-This project demonstrates practical implementation of:
-
-- Layered Architecture
-- REST API Design
-- DTO Pattern
-- Repository Pattern
-- Service Layer Pattern
-- Spring Security
-- JWT Authentication
-- Bean Validation
-- Global Exception Handling
-- Entity Relationships
-- JPA & Hibernate
-- Clean Code Principles
-- Git Feature Branch Workflow
-- Pull Request Workflow
+* REST API design
+* Layered architecture
+* Spring Security
+* JWT authentication
+* Role-based authorization
+* DTO-based API design
+* JPA entity relationships
+* Transaction management
+* Exception handling
+* Database design
+* Git feature-branch workflow
+* Testing
+* Cloud deployment
+* Microservice-ready architecture
 
 ---
 
@@ -332,12 +707,10 @@ This project demonstrates practical implementation of:
 
 **Arpit Vishwakarma**
 
-🔗 GitHub  
-https://github.com/arpitjha461
-
-🔗 LinkedIn  
-https://www.linkedin.com/in/arpitvishw
+Backend Developer | Java | Spring Boot | REST APIs | SQL | Automation Testing
 
 ---
 
-⭐ If you found this project helpful, consider giving it a Star.
+## 📌 Current Focus
+
+> **Order Module — Entity relationships, Order/OrderItem DTOs, checkout flow, and transactional order processing.**
