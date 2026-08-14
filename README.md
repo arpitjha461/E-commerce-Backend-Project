@@ -84,76 +84,88 @@ Validation
 # 📂 Project Structure
 
 ```text
-src/
-└── main/
-    └── java/
-        └── com/
-            └── arpit/
-                └── ecommerce/
-                    │
-                    ├── config/
-                    │   └── SecurityConfig.java
-                    │
-                    ├── controller/
-                    │   ├── UserController.java
-                    │   ├── CategoryController.java
-                    │   ├── ProductController.java
-                    │   ├── CartController.java
-                    │   └── OrderController.java
-                    │
-                    ├── dto/
-                    │   ├── request/
-                    │   │   ├── AddToCartRequestDTO.java
-                    │   │   └── UpdateCartQuantityRequestDTO.java
-                    │   │
-                    │   └── response/
-                    │       ├── CartResponseDTO.java
-                    │       ├── CartItemResponseDTO.java
-                    │       ├── OrderResponseDTO.java
-                    │       └── OrderItemResponseDTO.java
-                    │
-                    ├── entity/
-                    │   ├── User.java
-                    │   ├── Category.java
-                    │   ├── Product.java
-                    │   ├── Cart.java
-                    │   ├── CartItem.java
-                    │   ├── Order.java
-                    │   └── OrderItem.java
-                    │
-                    ├── enums/
-                    │   └── OrderStatus.java
-                    │
-                    ├── exception/
-                    │   ├── GlobalExceptionHandler.java
-                    │   ├── UserNotFoundException.java
-                    │   ├── ProductNotFoundException.java
-                    │   ├── CategoryNotFoundException.java
-                    │   ├── CartItemNotFoundException.java
-                    │   └── InvalidCredentialsException.java
-                    │
-                    ├── repository/
-                    │   ├── UserRepository.java
-                    │   ├── CategoryRepository.java
-                    │   ├── ProductRepository.java
-                    │   ├── CartRepository.java
-                    │   ├── CartItemRepository.java
-                    │   ├── OrderRepository.java
-                    │   └── OrderItemRepository.java
-                    │
-                    ├── security/
-                    │   └── JwtAuthenticationFilter.java
-                    │
-                    ├── service/
-                    │   ├── CustomUserDetailsService.java
-                    │   ├── UserService.java
-                    │   ├── CategoryService.java
-                    │   ├── ProductService.java
-                    │   ├── CartService.java
-                    │   └── OrderService.java
-                    │
-                    └── util/
-                        └── JwtUtil.java
+ecommerce/
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/
+│   │   │       └── arpit/
+│   │   │           └── ecommerce/
+│   │   │               ├── EcommerceApplication.java
+│   │   │               ├── config/
+│   │   │               │   └── SecurityConfig.java
+│   │   │               ├── controller/
+│   │   │               │   ├── CartController.java
+│   │   │               │   ├── CategoryController.java
+│   │   │               │   ├── ProductController.java
+│   │   │               │   └── UserController.java
+│   │   │               ├── dto/
+│   │   │               │   ├── request/
+│   │   │               │   │   ├── AddToCartRequestDTO.java
+│   │   │               │   │   ├── CategoryRequestDTO.java
+│   │   │               │   │   ├── LoginRequestDTO.java
+│   │   │               │   │   ├── ProductRequestDTO.java
+│   │   │               │   │   ├── UpdateCartQuantityRequestDTO.java
+│   │   │               │   │   └── UserRequestDTO.java
+│   │   │               │   └── response/
+│   │   │               │       ├── CartItemResponseDTO.java
+│   │   │               │       ├── CartResponseDTO.java
+│   │   │               │       ├── CategoryResponseDTO.java
+│   │   │               │       ├── LoginResponseDTO.java
+│   │   │               │       ├── ProductResponseDTO.java
+│   │   │               │       └── UserResponseDTO.java
+│   │   │               ├── entity/
+│   │   │               │   ├── Cart.java
+│   │   │               │   ├── CartItem.java
+│   │   │               │   ├── Category.java
+│   │   │               │   ├── Order.java
+│   │   │               │   ├── OrderItem.java
+│   │   │               │   ├── Product.java
+│   │   │               │   └── User.java
+│   │   │               ├── enums/
+│   │   │               │   └── OrderStatus.java
+│   │   │               ├── exception/
+│   │   │               │   ├── CartItemNotFoundException.java
+│   │   │               │   ├── CategoryNotFoundException.java
+│   │   │               │   ├── GlobalExceptionHandler.java
+│   │   │               │   ├── InvalidCredentialsException.java
+│   │   │               │   ├── ProductNotFoundException.java
+│   │   │               │   └── UserNotFoundException.java
+│   │   │               ├── payload/
+│   │   │               │   └── ApiError.java
+│   │   │               ├── repository/
+│   │   │               │   ├── CartItemRepository.java
+│   │   │               │   ├── CartRepository.java
+│   │   │               │   ├── CategoryRepository.java
+│   │   │               │   ├── OrderItemRepository.java
+│   │   │               │   ├── OrderRepository.java
+│   │   │               │   ├── ProductRepository.java
+│   │   │               │   └── UserRepository.java
+│   │   │               ├── security/
+│   │   │               │   └── JwtAuthenticationFilter.java
+│   │   │               ├── service/
+│   │   │               │   ├── CartService.java
+│   │   │               │   ├── CategoryService.java
+│   │   │               │   ├── CustomUserDetailsService.java
+│   │   │               │   ├── ProductService.java
+│   │   │               │   └── UserService.java
+│   │   │               └── util/
+│   │   │                   └── JwtUtil.java
+│   │   └── resources/
+│   │       ├── application.properties
+│   │       ├── static/
+│   │       └── templates/
+│   └── test/
+│       └── java/
+│           └── com/
+│               └── arpit/
+│                   └── ecommerce/
+│                       ├── EcommerceApplicationTests.java
+│                       └── config/
+│                           └── SecurityConfigTest.java
+├── pom.xml
+├── mvnw
+└── mvnw.cmd
 ```
 
 ---
