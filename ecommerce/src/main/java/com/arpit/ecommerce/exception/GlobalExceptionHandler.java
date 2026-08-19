@@ -89,4 +89,10 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
         }
 
+        @ExceptionHandler(CartEmptyException.class)
+        public ResponseEntity<String> handleCartEmptyException(CartEmptyException ex){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ex.getMessage());
+        }
+
 }

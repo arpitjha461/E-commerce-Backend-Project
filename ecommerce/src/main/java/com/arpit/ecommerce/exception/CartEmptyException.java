@@ -1,5 +1,5 @@
 package com.arpit.ecommerce.exception;
 
-public class CartNotFoundException extends RuntimeException{
-    public CartNotFoundException (String msg){super(msg);}
+public class CartEmptyException extends RuntimeException{
+    public CartEmptyException(String msg){super(msg);}
 }

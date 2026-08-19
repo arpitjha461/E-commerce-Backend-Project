@@ -20,7 +20,6 @@ public class CartController {
         String response = cartService.addToCart(requestDTO.getUserId(),
         requestDTO.getProductId(),
         requestDTO.getQuantity());
-
         return ResponseEntity.ok(response);
     }
 
