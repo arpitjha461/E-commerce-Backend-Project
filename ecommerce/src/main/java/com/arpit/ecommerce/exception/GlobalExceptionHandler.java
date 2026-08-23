@@ -94,5 +94,13 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ex.getMessage());
         }
+        @ExceptionHandler(OrderNotFoundException.class)
+        public ResponseEntity<ApiError> handleOrderNotFoundException(OrderNotFoundException ex){
+            ApiError apiError = new ApiError();
+            apiError.setTimestamp(LocalDateTime.now());
+            apiError.setMessage(ex.getMessage());
+            apiError.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+        }
 
 }

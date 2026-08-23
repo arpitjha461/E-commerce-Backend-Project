@@ -5,6 +5,7 @@ import com.arpit.ecommerce.dto.response.OrderResponseDTO;
 import com.arpit.ecommerce.entity.*;
 import com.arpit.ecommerce.enums.OrderStatus;
 import com.arpit.ecommerce.exception.CartEmptyException;
+import com.arpit.ecommerce.exception.OrderNotFoundException;
 import com.arpit.ecommerce.exception.UserNotFoundException;
 import com.arpit.ecommerce.repository.CartRepository;
 import com.arpit.ecommerce.repository.OrderRepository;
@@ -127,6 +128,46 @@ public class OrderService {
         return responseList;
     }
 
+    public OrderResponseDTO getOrderById(Long orderId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName();
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UserNotFoundException("User not found with email: "+ email));
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(()-> new OrderNotFoundException("Order not found with Id: "+orderId));
+
+        if (!order.getUser().getId().equals(user.getId())){
+            throw new OrderNotFoundException("Order not found with id: "+ orderId);
+        }
+
+        OrderResponseDTO responseDTO = new OrderResponseDTO();
+        responseDTO.setOrderId(order.getId());
+        responseDTO.setStatus(order.getStatus());
+        responseDTO.setCreatedAt(order.getCreatedAt());
+        responseDTO.setTotalAmount(order.getTotalAmount());
+
+        List<OrderItemResponseDTO> items = new ArrayList<>();
+
+        for (OrderItem orderItem: order.getOrderItems()){
+            OrderItemResponseDTO itemDTO = new OrderItemResponseDTO();
+
+            itemDTO.setProductId(orderItem.getProduct().getId());
+            itemDTO.setProductName(orderItem.getProduct().getName());
+            itemDTO.setQuantity(orderItem.getQuantity());
+            itemDTO.setPrice(orderItem.getPrice());
+
+            BigDecimal subtotal = orderItem.getPrice()
+                    .multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+            itemDTO.setSubtotal(subtotal);
+
+            items.add(itemDTO);
+        }
+        responseDTO.setItems(items);
+        return responseDTO;
+    }
 }
 
 
