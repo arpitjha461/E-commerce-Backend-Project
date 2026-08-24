@@ -5,6 +5,7 @@ import com.arpit.ecommerce.dto.response.OrderResponseDTO;
 import com.arpit.ecommerce.entity.*;
 import com.arpit.ecommerce.enums.OrderStatus;
 import com.arpit.ecommerce.exception.CartEmptyException;
+import com.arpit.ecommerce.exception.InvalidOrderStatusException;
 import com.arpit.ecommerce.exception.OrderNotFoundException;
 import com.arpit.ecommerce.exception.UserNotFoundException;
 import com.arpit.ecommerce.repository.CartRepository;
@@ -162,6 +163,49 @@ public class OrderService {
             BigDecimal subtotal = orderItem.getPrice()
                     .multiply(BigDecimal.valueOf(orderItem.getQuantity()));
             itemDTO.setSubtotal(subtotal);
+
+            items.add(itemDTO);
+        }
+        responseDTO.setItems(items);
+        return responseDTO;
+    }
+
+    public OrderResponseDTO cancelOrder(Long orderId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UserNotFoundException("User not found with email: "+ email));
+
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(()-> new OrderNotFoundException("Order not found with order id : "+orderId));
+
+        if (!order.getUser().getId().equals(user.getId())){
+            throw new OrderNotFoundException("order not found with id: "+orderId);
+        }
+
+        if (!OrderStatus.PENDING.equals(order.getStatus())){
+            throw new InvalidOrderStatusException("Order cannot be cancelled in status: "+order.getStatus());
+        }
+
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
+
+        OrderResponseDTO responseDTO = new OrderResponseDTO();
+        responseDTO.setOrderId(order.getId());
+        responseDTO.setCreatedAt(order.getCreatedAt());
+        responseDTO.setStatus(order.getStatus());
+        responseDTO.setTotalAmount(order.getTotalAmount());
+
+        List<OrderItemResponseDTO> items = new ArrayList<>();
+        for (OrderItem orderItem: order.getOrderItems()){
+            OrderItemResponseDTO itemDTO =new OrderItemResponseDTO();
+            itemDTO.setProductId(orderItem.getProduct().getId());
+            itemDTO.setProductName(orderItem.getProduct().getName());
+            itemDTO.setQuantity(orderItem.getQuantity());
+            itemDTO.setPrice(orderItem.getPrice());
+
+            BigDecimal subTotal = orderItem.getPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+            itemDTO.setSubtotal(subTotal);
 
             items.add(itemDTO);
         }

@@ -24,7 +24,7 @@ public class OrderController {
         List<OrderResponseDTO> orders =orderService.getMyOrders();
         return ResponseEntity.ok(orders);
     }
-    @GetMapping("/{orderid}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponseDTO> getOrderById(@PathVariable Long orderId){
         OrderResponseDTO responseDTO = orderService.getOrderById(orderId);
         return ResponseEntity.ok(responseDTO);
@@ -35,4 +35,10 @@ public class OrderController {
 //        OrderResponseDTO responseDTO = orderService.getOrderById(orderId);
 //        return ResponseEntity.ok(responseDTO);
 //     }
+
+    @PutMapping("/{orderId}/cancel")
+    public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable Long orderId){
+        OrderResponseDTO responseDTO = orderService.cancelOrder(orderId);
+        return ResponseEntity.ok(responseDTO);
+    }
 }
