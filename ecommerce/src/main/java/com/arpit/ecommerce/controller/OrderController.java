@@ -4,10 +4,7 @@ import com.arpit.ecommerce.dto.response.OrderResponseDTO;
 import com.arpit.ecommerce.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -27,4 +24,15 @@ public class OrderController {
         List<OrderResponseDTO> orders =orderService.getMyOrders();
         return ResponseEntity.ok(orders);
     }
+    @GetMapping("/{orderid}")
+    public ResponseEntity<OrderResponseDTO> getOrderById(@PathVariable Long orderId){
+        OrderResponseDTO responseDTO = orderService.getOrderById(orderId);
+        return ResponseEntity.ok(responseDTO);
+    }
+//      or another way
+//    @GetMapping("/{order-id}")
+//    public ResponseEntity<OrderResponseDTO> getOrderById(@PathVariable("order-id") Long orderId){
+//        OrderResponseDTO responseDTO = orderService.getOrderById(orderId);
+//        return ResponseEntity.ok(responseDTO);
+//     }
 }
