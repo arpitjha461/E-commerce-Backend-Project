@@ -1,5 +1,6 @@
 package com.arpit.ecommerce.service;
 
+import com.arpit.ecommerce.dto.request.UpdateOrderStatusRequestDTO;
 import com.arpit.ecommerce.dto.response.OrderItemResponseDTO;
 import com.arpit.ecommerce.dto.response.OrderResponseDTO;
 import com.arpit.ecommerce.entity.*;
@@ -211,6 +212,46 @@ public class OrderService {
         }
         responseDTO.setItems(items);
         return responseDTO;
+    }
+
+    private boolean isValidStatusTransition(OrderStatus currentStatus,OrderStatus newStatus){
+        return switch (currentStatus){
+            case PENDING -> newStatus == OrderStatus.PROCESSING;
+            case PROCESSING -> newStatus == OrderStatus.CONFIRMED;
+            case CONFIRMED -> newStatus == OrderStatus.SHIPPED;
+            case SHIPPED -> newStatus == OrderStatus.OUT_FOR_DELIVERY;
+            case OUT_FOR_DELIVERY -> newStatus == OrderStatus.DELIVERED;
+            default -> false;
+        };
+    }
+
+    public OrderResponseDTO updateOrderStatus(Long orderId, UpdateOrderStatusRequestDTO requestDTO){
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(()-> new OrderNotFoundException("Order not found with id: "+orderId));
+
+        if (!isValidStatusTransition(order.getStatus(),requestDTO.getStatus())){
+            throw new InvalidOrderStatusException(
+                    "Invalid status transition from "+order.getStatus() + " to "+requestDTO.getStatus()
+            );
+        };
+        order.setStatus(requestDTO.getStatus());
+        orderRepository.save(order);
+
+
+    }
+
+    private OrderResponseDTO mapToOrderResponseDTO(Order order){
+        OrderResponseDTO responseDTO = new OrderResponseDTO();
+
+        responseDTO.setOrderId(order.getId());
+        responseDTO.setStatus(order.getStatus());
+        responseDTO.setCreatedAt(order.getCreatedAt());
+        responseDTO.setTotalAmount(order.getTotalAmount());
+
+        List<OrderItemResponseDTO> items = new ArrayList<>();
+
+        for
+
     }
 }
 
