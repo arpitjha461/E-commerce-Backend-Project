@@ -233,11 +233,11 @@ public class OrderService {
             throw new InvalidOrderStatusException(
                     "Invalid status transition from "+order.getStatus() + " to "+requestDTO.getStatus()
             );
-        };
+        }
+
         order.setStatus(requestDTO.getStatus());
         orderRepository.save(order);
-
-
+        return mapToOrderResponseDTO(order);
     }
 
     private OrderResponseDTO mapToOrderResponseDTO(Order order){
@@ -250,8 +250,20 @@ public class OrderService {
 
         List<OrderItemResponseDTO> items = new ArrayList<>();
 
-        for
+        for(OrderItem orderItem: order.getOrderItems()){
+            OrderItemResponseDTO itemResponseDTO = new OrderItemResponseDTO();
+            itemResponseDTO.setProductId(orderItem.getProduct().getId());
+            itemResponseDTO.setProductName(orderItem.getProduct().getName());
+            itemResponseDTO.setPrice(orderItem.getPrice());
+            itemResponseDTO.setQuantity(orderItem.getQuantity());
 
+            BigDecimal subtotal = orderItem.getPrice()
+                    .multiply(BigDecimal.valueOf(orderItem.getQuantity()));
+            itemResponseDTO.setSubtotal(subtotal);
+            items.add(itemResponseDTO);
+        }
+        responseDTO.setItems(items);
+        return responseDTO;
     }
 }
 

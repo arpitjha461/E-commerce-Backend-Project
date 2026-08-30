@@ -1,7 +1,9 @@
 package com.arpit.ecommerce.controller;
 
+import com.arpit.ecommerce.dto.request.UpdateOrderStatusRequestDTO;
 import com.arpit.ecommerce.dto.response.OrderResponseDTO;
 import com.arpit.ecommerce.service.OrderService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -39,6 +41,13 @@ public class OrderController {
     @PutMapping("/{orderId}/cancel")
     public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable Long orderId){
         OrderResponseDTO responseDTO = orderService.cancelOrder(orderId);
+        return ResponseEntity.ok(responseDTO);
+    }
+
+    @PutMapping("/{orderId}/status")
+    public ResponseEntity<OrderResponseDTO> updateOrderStatus(
+            @PathVariable Long orderId,@Valid @RequestBody UpdateOrderStatusRequestDTO requestDTO) {
+        OrderResponseDTO responseDTO = orderService.updateOrderStatus(orderId, requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
 }
