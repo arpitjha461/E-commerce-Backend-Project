@@ -540,6 +540,466 @@ The current payment flow is simulated; real payment gateway integration can be a
 
 ---
 
+
+# 🔌 API Reference
+
+All protected APIs require:
+
+```http
+Authorization: Bearer <JWT_TOKEN>
+Content-Type: application/json
+```
+
+---
+
+## 🔐 Authentication APIs
+
+### 1. Register User
+
+```http
+POST /users/register
+```
+
+**Request Body:**
+
+```json
+{
+  "name": "Arpit",
+  "email": "arpit@example.com",
+  "password": "Password@123",
+  "role": "USER"
+}
+```
+
+### 2. Login
+
+```http
+POST /users/login
+```
+
+**Request Body:**
+
+```json
+{
+  "email": "arpit@example.com",
+  "password": "Password@123"
+}
+```
+
+The response returns a JWT token which is used for protected APIs.
+
+---
+
+## 👤 User APIs
+
+### 3. Get All Users
+
+```http
+GET /users
+```
+
+**Authorization:** `ADMIN`
+
+**Request Body:** None
+
+### 4. Get User by ID
+
+```http
+GET /users/{userId}
+```
+
+**Request Body:** None
+
+### 5. Update User
+
+```http
+PUT /users/{userId}
+```
+
+**Request Body:**
+
+```json
+{
+  "name": "Updated Name",
+  "email": "updated@example.com",
+  "password": "NewPassword@123"
+}
+```
+
+### 6. Delete User
+
+```http
+DELETE /users/{userId}
+```
+
+**Authorization:** `ADMIN`
+
+**Request Body:** None
+
+---
+
+## 📦 Product APIs
+
+### 7. Create Product
+
+```http
+POST /products
+```
+
+**Request Body:**
+
+```json
+{
+  "name": "Laptop",
+  "description": "Gaming Laptop",
+  "price": 75000,
+  "stock": 10,
+  "categoryId": 1
+}
+```
+
+### 8. Get All Products
+
+```http
+GET /products
+```
+
+**Request Body:** None
+
+### 9. Get Product by ID
+
+```http
+GET /products/{productId}
+```
+
+**Request Body:** None
+
+### 10. Update Product
+
+```http
+PUT /products/{productId}
+```
+
+**Request Body:**
+
+```json
+{
+  "name": "Updated Laptop",
+  "description": "Updated description",
+  "price": 72000,
+  "stock": 15,
+  "categoryId": 1
+}
+```
+
+### 11. Delete Product
+
+```http
+DELETE /products/{productId}
+```
+
+**Request Body:** None
+
+---
+
+## 🗂️ Category APIs
+
+### 12. Create Category
+
+```http
+POST /categories
+```
+
+**Authorization:** `ADMIN`
+
+**Request Body:**
+
+```json
+{
+  "name": "Electronics",
+  "description": "Electronic products"
+}
+```
+
+### 13. Get All Categories
+
+```http
+GET /categories
+```
+
+**Request Body:** None
+
+### 14. Get Category by ID
+
+```http
+GET /categories/{categoryId}
+```
+
+**Request Body:** None
+
+### 15. Update Category
+
+```http
+PUT /categories/{categoryId}
+```
+
+**Authorization:** `ADMIN`
+
+**Request Body:**
+
+```json
+{
+  "name": "Updated Electronics",
+  "description": "Updated category description"
+}
+```
+
+### 16. Delete Category
+
+```http
+DELETE /categories/{categoryId}
+```
+
+**Authorization:** `ADMIN`
+
+**Request Body:** None
+
+---
+
+## 🛒 Cart APIs
+
+### 17. Add Product to Cart
+
+```http
+POST /cart/add
+```
+
+**Request Body:**
+
+```json
+{
+  "userId": 26,
+  "productId": 6,
+  "quantity": 2
+}
+```
+
+### 18. Get Cart
+
+```http
+GET /cart/{userId}
+```
+
+**Request Body:** None
+
+### 19. Update Cart Quantity
+
+```http
+PUT /cart/item/{cartItemId}
+```
+
+**Request Body:**
+
+```json
+{
+  "quantity": 3
+}
+```
+
+If quantity is `0`, the cart item is removed.
+
+### 20. Remove Cart Item
+
+```http
+DELETE /cart/items/{cartItemId}
+```
+
+**Request Body:** None
+
+### 21. Clear Cart
+
+```http
+DELETE /cart/{userId}/items
+```
+
+**Request Body:** None
+
+---
+
+## 📦 Order APIs
+
+### 22. Place Order
+
+```http
+POST /orders/place
+```
+
+**Request Body:** None
+
+The order is created from the authenticated user's cart.
+
+The server:
+- Creates the order.
+- Creates `OrderItem` records.
+- Calculates `totalAmount`.
+- Saves the order.
+- Clears the cart.
+
+### 23. Get My Orders
+
+```http
+GET /orders/my-orders
+```
+
+**Request Body:** None
+
+### 24. Get Order by ID
+
+```http
+GET /orders/{orderId}
+```
+
+**Request Body:** None
+
+The authenticated user can access only their own order.
+
+### 25. Cancel Order
+
+```http
+PUT /orders/{orderId}/cancel
+```
+
+**Request Body:** None
+
+Cancellation is currently allowed only when the order status is `PENDING`.
+
+### 26. Update Order Status
+
+```http
+PUT /orders/{orderId}/status
+```
+
+**Authorization:** `ADMIN`
+
+**Request Body:**
+
+```json
+{
+  "status": "PROCESSING"
+}
+```
+
+Valid status flow:
+
+```text
+PENDING
+   ↓
+PROCESSING
+   ↓
+CONFIRMED
+   ↓
+SHIPPED
+   ↓
+OUT_FOR_DELIVERY
+   ↓
+DELIVERED
+```
+
+---
+
+## 💳 Payment APIs
+
+### 27. Create Payment
+
+```http
+POST /payments/{orderId}
+```
+
+**Request Body:**
+
+```json
+{
+  "paymentMethod": "UPI"
+}
+```
+
+Supported payment methods:
+
+```text
+UPI
+CARD
+NET_BANKING
+COD
+```
+
+The client does **not** send:
+
+```text
+amount
+status
+transactionId
+```
+
+These are controlled by the server.
+
+The amount is taken from:
+
+```text
+Order.totalAmount
+```
+
+Initial payment status:
+
+```text
+PENDING
+```
+
+Payment statuses:
+
+```text
+PENDING
+SUCCESS
+FAILED
+```
+
+The payment must belong to the authenticated user's order, and only one payment is allowed per order.
+
+---
+
+## 📋 API Summary
+
+| # | Method | Endpoint | Authorization | Body |
+|---|---|---|---|---|
+| 1 | POST | `/users/register` | Public | JSON |
+| 2 | POST | `/users/login` | Public | JSON |
+| 3 | GET | `/users` | ADMIN | None |
+| 4 | GET | `/users/{userId}` | Authenticated | None |
+| 5 | PUT | `/users/{userId}` | Authenticated | JSON |
+| 6 | DELETE | `/users/{userId}` | ADMIN | None |
+| 7 | POST | `/products` | Authenticated | JSON |
+| 8 | GET | `/products` | Authenticated | None |
+| 9 | GET | `/products/{productId}` | Authenticated | None |
+| 10 | PUT | `/products/{productId}` | Authenticated | JSON |
+| 11 | DELETE | `/products/{productId}` | Authenticated | None |
+| 12 | POST | `/categories` | ADMIN | JSON |
+| 13 | GET | `/categories` | USER / ADMIN | None |
+| 14 | GET | `/categories/{categoryId}` | USER / ADMIN | None |
+| 15 | PUT | `/categories/{categoryId}` | ADMIN | JSON |
+| 16 | DELETE | `/categories/{categoryId}` | ADMIN | None |
+| 17 | POST | `/cart/add` | Authenticated | JSON |
+| 18 | GET | `/cart/{userId}` | Authenticated | None |
+| 19 | PUT | `/cart/item/{cartItemId}` | Authenticated | JSON |
+| 20 | DELETE | `/cart/items/{cartItemId}` | Authenticated | None |
+| 21 | DELETE | `/cart/{userId}/items` | Authenticated | None |
+| 22 | POST | `/orders/place` | Authenticated | None |
+| 23 | GET | `/orders/my-orders` | Authenticated | None |
+| 24 | GET | `/orders/{orderId}` | Authenticated | None |
+| 25 | PUT | `/orders/{orderId}/cancel` | Authenticated | None |
+| 26 | PUT | `/orders/{orderId}/status` | ADMIN | JSON |
+| 27 | POST | `/payments/{orderId}` | Authenticated | JSON |
+
+---
+
 # 🧾 Order Processing Flow
 
 The planned checkout flow is:
