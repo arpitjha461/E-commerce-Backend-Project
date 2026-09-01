@@ -1,9 +1,9 @@
 package com.arpit.ecommerce.service;
 
-import com.arpit.ecommerce.dto.LoginRequestDTO;
-import com.arpit.ecommerce.dto.LoginResponseDTO;
-import com.arpit.ecommerce.dto.UserRequestDTO;
-import com.arpit.ecommerce.dto.UserResponseDTO;
+import com.arpit.ecommerce.dto.request.LoginRequestDTO;
+import com.arpit.ecommerce.dto.response.LoginResponseDTO;
+import com.arpit.ecommerce.dto.request.UserRequestDTO;
+import com.arpit.ecommerce.dto.response.UserResponseDTO;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.exception.InvalidCredentialsException;
 import com.arpit.ecommerce.repository.UserRepository;

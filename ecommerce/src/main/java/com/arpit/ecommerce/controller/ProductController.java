@@ -1,7 +1,7 @@
 package com.arpit.ecommerce.controller;
 
-import com.arpit.ecommerce.dto.ProductRequestDTO;
-import com.arpit.ecommerce.dto.ProductResponseDTO;
+import com.arpit.ecommerce.dto.request.ProductRequestDTO;
+import com.arpit.ecommerce.dto.response.ProductResponseDTO;
 import com.arpit.ecommerce.service.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

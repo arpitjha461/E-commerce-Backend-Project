@@ -1,9 +1,9 @@
 package com.arpit.ecommerce.controller;
 
-import com.arpit.ecommerce.dto.LoginRequestDTO;
-import com.arpit.ecommerce.dto.LoginResponseDTO;
-import com.arpit.ecommerce.dto.UserRequestDTO;
-import com.arpit.ecommerce.dto.UserResponseDTO;
+import com.arpit.ecommerce.dto.request.LoginRequestDTO;
+import com.arpit.ecommerce.dto.response.LoginResponseDTO;
+import com.arpit.ecommerce.dto.request.UserRequestDTO;
+import com.arpit.ecommerce.dto.response.UserResponseDTO;
 import com.arpit.ecommerce.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

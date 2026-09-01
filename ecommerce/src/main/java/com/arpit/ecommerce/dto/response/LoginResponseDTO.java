@@ -1,4 +1,4 @@
-package com.arpit.ecommerce.dto;
+package com.arpit.ecommerce.dto.response;
 
 public class LoginResponseDTO {
 

@@ -1,8 +1,8 @@
 package com.arpit.ecommerce.controller;
 
-import com.arpit.ecommerce.dto.AddToCartRequestDTO;
-import com.arpit.ecommerce.dto.CartResponseDTO;
-import com.arpit.ecommerce.dto.UpdateCartQuantityRequestDTO;
+import com.arpit.ecommerce.dto.request.AddToCartRequestDTO;
+import com.arpit.ecommerce.dto.response.CartResponseDTO;
+import com.arpit.ecommerce.dto.request.UpdateCartQuantityRequestDTO;
 import com.arpit.ecommerce.service.CartService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,6 @@ public class CartController {
         String response = cartService.addToCart(requestDTO.getUserId(),
         requestDTO.getProductId(),
         requestDTO.getQuantity());
-
         return ResponseEntity.ok(response);
     }
 
