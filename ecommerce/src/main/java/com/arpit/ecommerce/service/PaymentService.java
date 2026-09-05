@@ -73,13 +73,13 @@ public class PaymentService {
         if (!PaymentStatus.PENDING.equals(payment.getStatus())){
             throw new InvalidStatusForPaymentException("Payment cannot be completed in status: "+payment.getStatus());
         }
-        payment.setStatus(PaymentStatus.SUCCESS);
 
         Order order = payment.getOrder();
         if (!OrderStatus.PENDING.equals(order.getStatus())){
             throw new InvalidOrderStatusException("Payment cannot be completed for order with status: "
                     + order.getStatus());
         }
+        payment.setStatus(PaymentStatus.SUCCESS);
         order.setStatus(OrderStatus.CONFIRMED);
         paymentRepository.save(payment);
 
