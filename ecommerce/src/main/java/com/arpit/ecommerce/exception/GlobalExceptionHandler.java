@@ -112,4 +112,39 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(apiError,HttpStatus.BAD_REQUEST);
         }
 
+        @ExceptionHandler(PaymentNotFoundException.class)
+        public ResponseEntity<ApiError> handlePaymentNotFoundException(PaymentNotFoundException ex){
+            ApiError apiError = new ApiError();
+            apiError.setTimestamp(LocalDateTime.now());
+            apiError.setMessage(ex.getMessage());
+            apiError.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+        }
+
+    @ExceptionHandler(InvalidStatusForPaymentException.class)
+    public ResponseEntity<ApiError> handleInvalidStatusForPaymentException(
+            InvalidStatusForPaymentException ex) {
+
+        ApiError apiError = new ApiError();
+        apiError.setTimestamp(LocalDateTime.now());
+        apiError.setMessage(ex.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.value());
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

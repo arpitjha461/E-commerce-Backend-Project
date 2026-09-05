@@ -21,4 +21,9 @@ public class PaymentController {
         PaymentResponseDTO responseDTO = paymentService.createPayment(orderId,requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
-}
+    @PutMapping("/{paymentId}/complete")
+    public ResponseEntity<PaymentResponseDTO> completePayment(@PathVariable Long paymentId){
+        PaymentResponseDTO responseDTO = paymentService.completePayment(paymentId);
+        return ResponseEntity.ok(responseDTO);
+
+    }}

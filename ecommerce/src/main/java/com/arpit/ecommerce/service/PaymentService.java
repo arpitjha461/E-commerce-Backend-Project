@@ -11,12 +11,12 @@ import com.arpit.ecommerce.exception.*;
 import com.arpit.ecommerce.repository.OrderRepository;
 import com.arpit.ecommerce.repository.PaymentRepository;
 import com.arpit.ecommerce.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
@@ -62,15 +62,40 @@ public class PaymentService {
 
         paymentRepository.save(payment);
 
+        return mapToPaymentResponseDTO(payment);
+    }
+
+    @Transactional
+    public PaymentResponseDTO completePayment(Long paymentId){
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(()-> new PaymentNotFoundException("Payment not found with Id: "+ paymentId));
+
+        if (!PaymentStatus.PENDING.equals(payment.getStatus())){
+            throw new InvalidStatusForPaymentException("Payment cannot be completed in status: "+payment.getStatus());
+        }
+        payment.setStatus(PaymentStatus.SUCCESS);
+
+        Order order = payment.getOrder();
+        if (!OrderStatus.PENDING.equals(order.getStatus())){
+            throw new InvalidOrderStatusException("Payment cannot be completed for order with status: "
+                    + order.getStatus());
+        }
+        order.setStatus(OrderStatus.CONFIRMED);
+        paymentRepository.save(payment);
+
+        return mapToPaymentResponseDTO(payment);
+    }
+
+    private PaymentResponseDTO mapToPaymentResponseDTO(Payment payment){
         PaymentResponseDTO responseDTO = new PaymentResponseDTO();
-        responseDTO.setOrderId(orderId);
+
+        responseDTO.setOrderId(payment.getOrder().getId());
         responseDTO.setPaymentId(payment.getId());
         responseDTO.setPaymentMethod(payment.getPaymentMethod());
         responseDTO.setPaymentStatus(payment.getStatus());
         responseDTO.setTransactionId(payment.getTransactionId());
         responseDTO.setAmount(payment.getAmount());
         responseDTO.setCreatedAt(payment.getCreatedAt());
-
         return responseDTO;
     }
 }
