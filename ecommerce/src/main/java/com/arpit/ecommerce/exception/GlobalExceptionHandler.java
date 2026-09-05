@@ -90,9 +90,12 @@ public class GlobalExceptionHandler {
         }
 
         @ExceptionHandler(CartEmptyException.class)
-        public ResponseEntity<String> handleCartEmptyException(CartEmptyException ex){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ex.getMessage());
+        public ResponseEntity<ApiError> handleCartEmptyException(CartEmptyException ex){
+            ApiError apiError = new ApiError();
+            apiError.setTimestamp(LocalDateTime.now());
+            apiError.setMessage(ex.getMessage());
+            apiError.setStatus(HttpStatus.BAD_REQUEST.value());
+            return new ResponseEntity<>(apiError,HttpStatus.BAD_REQUEST);
         }
         @ExceptionHandler(OrderNotFoundException.class)
         public ResponseEntity<ApiError> handleOrderNotFoundException(OrderNotFoundException ex){
@@ -112,4 +115,62 @@ public class GlobalExceptionHandler {
             return new ResponseEntity<>(apiError,HttpStatus.BAD_REQUEST);
         }
 
+        @ExceptionHandler(PaymentNotFoundException.class)
+        public ResponseEntity<ApiError> handlePaymentNotFoundException(PaymentNotFoundException ex){
+            ApiError apiError = new ApiError();
+            apiError.setTimestamp(LocalDateTime.now());
+            apiError.setMessage(ex.getMessage());
+            apiError.setStatus(HttpStatus.NOT_FOUND.value());
+            return new ResponseEntity<>(apiError,HttpStatus.NOT_FOUND);
+        }
+
+    @ExceptionHandler(InvalidStatusForPaymentException.class)
+    public ResponseEntity<ApiError> handleInvalidStatusForPaymentException(
+            InvalidStatusForPaymentException ex) {
+
+        ApiError apiError = new ApiError();
+        apiError.setTimestamp(LocalDateTime.now());
+        apiError.setMessage(ex.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.value());
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(PaymentAlreadyExistsException.class)
+    public ResponseEntity<ApiError> handlePaymentAlreadyExistsException(
+            PaymentAlreadyExistsException ex) {
+
+        ApiError apiError = new ApiError();
+        apiError.setTimestamp(LocalDateTime.now());
+        apiError.setMessage(ex.getMessage());
+        apiError.setStatus(HttpStatus.CONFLICT.value());
+
+        return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(UnauthorizedPaymentException.class)
+    public ResponseEntity<ApiError> handleUnauthorizedPaymentException(
+            UnauthorizedPaymentException ex) {
+
+        ApiError apiError = new ApiError();
+        apiError.setTimestamp(LocalDateTime.now());
+        apiError.setMessage(ex.getMessage());
+        apiError.setStatus(HttpStatus.FORBIDDEN.value());
+
+        return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

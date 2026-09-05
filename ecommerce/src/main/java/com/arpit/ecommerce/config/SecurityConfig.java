@@ -40,6 +40,12 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/orders/*/status")
                         .hasRole("ADMIN")
                         // Cart APIs
+
+                        // Payment APIs
+                        .requestMatchers(HttpMethod.PUT,"/payments/*/complete")
+                        .hasRole("ADMIN")
+
+                        // Any Request
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

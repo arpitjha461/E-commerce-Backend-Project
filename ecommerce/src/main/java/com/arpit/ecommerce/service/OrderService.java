@@ -263,17 +263,11 @@ public class OrderService {
         if (!isValidStatusTransition(
                 order.getStatus(),
                 requestDTO.getStatus())) {
-
-            throw new InvalidOrderStatusException(
-                    "Invalid status transition from "
-                            + order.getStatus()
-                            + " to "
-                            + requestDTO.getStatus()
-            );
+            throw new InvalidOrderStatusException("Invalid status transition from "+ order.getStatus()
+                            + " to " + requestDTO.getStatus());
         }
 
         order.setStatus(requestDTO.getStatus());
-
         orderRepository.save(order);
 
         return mapToOrderResponseDTO(order);
@@ -297,12 +291,9 @@ public class OrderService {
 
         for (OrderItem orderItem : order.getOrderItems()) {
 
-            OrderItemResponseDTO itemResponseDTO =
-                    new OrderItemResponseDTO();
+            OrderItemResponseDTO itemResponseDTO = new OrderItemResponseDTO();
 
-            itemResponseDTO.setProductId(
-                    orderItem.getProduct().getId()
-            );
+            itemResponseDTO.setProductId( orderItem.getProduct().getId());
 
             itemResponseDTO.setProductName(
                     orderItem.getProduct().getName()
