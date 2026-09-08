@@ -97,6 +97,8 @@ ecommerce/
 │   │   │               ├── controller/
 │   │   │               │   ├── CartController.java
 │   │   │               │   ├── CategoryController.java
+│   │   │               │   ├── OrderController.java
+│   │   │               │   ├── PaymentController.java
 │   │   │               │   ├── ProductController.java
 │   │   │               │   └── UserController.java
 │   │   │               ├── dto/
@@ -104,6 +106,7 @@ ecommerce/
 │   │   │               │   │   ├── AddToCartRequestDTO.java
 │   │   │               │   │   ├── CategoryRequestDTO.java
 │   │   │               │   │   ├── LoginRequestDTO.java
+│   │   │               │   │   ├── PaymentRequestDTO.java
 │   │   │               │   │   ├── ProductRequestDTO.java
 │   │   │               │   │   ├── UpdateCartQuantityRequestDTO.java
 │   │   │               │   │   └── UserRequestDTO.java
@@ -120,16 +123,25 @@ ecommerce/
 │   │   │               │   ├── Category.java
 │   │   │               │   ├── Order.java
 │   │   │               │   ├── OrderItem.java
+│   │   │               │   ├── Payment.java
 │   │   │               │   ├── Product.java
 │   │   │               │   └── User.java
 │   │   │               ├── enums/
-│   │   │               │   └── OrderStatus.java
+│   │   │               │   ├── OrderStatus.java
+│   │   │               │   ├── PaymentMethod.java
+│   │   │               │   └── PaymentStatus.java
 │   │   │               ├── exception/
 │   │   │               │   ├── CartItemNotFoundException.java
 │   │   │               │   ├── CategoryNotFoundException.java
 │   │   │               │   ├── GlobalExceptionHandler.java
 │   │   │               │   ├── InvalidCredentialsException.java
+│   │   │               │   ├── InvalidOrderStatusException.java
+│   │   │               │   ├── InvalidStatusForPaymentException.java
+│   │   │               │   ├── OrderNotFoundException.java
+│   │   │               │   ├── PaymentAlreadyExistsException.java
+│   │   │               │   ├── PaymentNotFoundException.java
 │   │   │               │   ├── ProductNotFoundException.java
+│   │   │               │   ├── UnauthorizedPaymentException.java
 │   │   │               │   └── UserNotFoundException.java
 │   │   │               ├── payload/
 │   │   │               │   └── ApiError.java
@@ -139,6 +151,7 @@ ecommerce/
 │   │   │               │   ├── CategoryRepository.java
 │   │   │               │   ├── OrderItemRepository.java
 │   │   │               │   ├── OrderRepository.java
+│   │   │               │   ├── PaymentRepository.java
 │   │   │               │   ├── ProductRepository.java
 │   │   │               │   └── UserRepository.java
 │   │   │               ├── security/
@@ -147,6 +160,8 @@ ecommerce/
 │   │   │               │   ├── CartService.java
 │   │   │               │   ├── CategoryService.java
 │   │   │               │   ├── CustomUserDetailsService.java
+│   │   │               │   ├── OrderService.java
+│   │   │               │   ├── PaymentService.java
 │   │   │               │   ├── ProductService.java
 │   │   │               │   └── UserService.java
 │   │   │               └── util/
@@ -354,8 +369,6 @@ The project uses the following order lifecycle:
 ```text
 PENDING
     ↓
-PROCESSING
-    ↓
 CONFIRMED
     ↓
 SHIPPED
@@ -451,7 +464,7 @@ The order status update API is restricted to administrators.
 
 # 💳 Payment Module
 
-The Payment module is currently **in development**.
+The Payment module is **completed**.
 
 ### Current Design
 
@@ -491,13 +504,14 @@ NET_BANKING
 COD
 ```
 
-### Payment API
+### Payment APIs
 
 ```text
 POST /payments/{orderId}
+PUT /payments/{paymentId}/complete
 ```
 
-The client provides only the payment method.
+The client provides only the payment method when creating a payment.
 
 The server controls:
 
@@ -507,9 +521,13 @@ status
 transactionId
 ```
 
-The payment amount is taken from the order's `totalAmount`.
+The payment amount is taken from:
 
-### Payment Processing Flow
+```text
+Order.totalAmount
+```
+
+### Payment Creation Flow
 
 ```text
 Authenticated User
@@ -520,7 +538,7 @@ Find Order
         ↓
 Verify Order belongs to User
         ↓
-Check Order can be paid
+Check Order is PENDING
         ↓
 Check Payment does not already exist
         ↓
@@ -536,10 +554,332 @@ Save Payment
 Return Payment Response
 ```
 
+### Payment Completion Flow
+
+```text
+Admin
+  ↓
+Find Payment
+  ↓
+Check Payment = PENDING
+  ↓
+Check Order = PENDING
+  ↓
+Payment → SUCCESS
+  ↓
+Order → CONFIRMED
+```
+
+`completePayment()` is transactional because Payment and Order are updated together.
+
 The current payment flow is simulated; real payment gateway integration can be added later.
+
+### Payment Entity Design
+
+```java
+@Entity
+@Table(name = "payments")
+public class Payment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @OneToOne
+    @JoinColumn(name = "order_id", nullable = false, unique = true)
+    private Order order;
+
+    private BigDecimal amount;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus status;
+
+    private String transactionId;
+
+    @CreationTimestamp
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+}
+```
+
+### Payment DTOs
+
+`PaymentRequestDTO` accepts only the payment method:
+
+```json
+{
+  "paymentMethod": "UPI"
+}
+```
+
+The response contains:
+
+```text
+paymentId
+orderId
+amount
+paymentMethod
+paymentStatus
+transactionId
+createdAt
+```
+
+This prevents the client from controlling sensitive payment fields such as amount, status, and transaction ID.
+
+### Payment Repository
+
+The repository provides order-based lookup to enforce one payment per order:
+
+```java
+Optional<Payment> findByOrder(Order order);
+```
+
+### Payment Service Rules
+
+When creating a payment, the service:
+
+1. Gets the authenticated user from the JWT/SecurityContext.
+2. Finds the user and order.
+3. Verifies that the order belongs to the authenticated user.
+4. Allows payment only when the order status is `PENDING`.
+5. Checks that a payment does not already exist.
+6. Creates the payment with the order's `totalAmount`.
+7. Sets status to `PENDING`.
+8. Generates the transaction ID on the server.
+
+When completing a payment:
+
+1. Finds the payment.
+2. Requires payment status to be `PENDING`.
+3. Requires the related order status to be `PENDING`.
+4. Changes payment status to `SUCCESS`.
+5. Changes order status to `CONFIRMED`.
+6. Performs both changes inside one transaction.
+
+```text
+Payment PENDING + Order PENDING
+            ↓
+      Payment SUCCESS
+            ↓
+      Order CONFIRMED
+```
+
+The payment completion operation is currently restricted to `ADMIN` through Spring Security.
+
+### Payment Security
+
+```java
+.requestMatchers(HttpMethod.PUT, "/payments/*/complete")
+    .hasRole("ADMIN")
+```
+
+Payment creation requires an authenticated user, while payment completion is an administrative operation in the current simulated implementation.
+
+### Payment Exceptions
+
+The payment module uses dedicated domain exceptions:
+
+```text
+PaymentNotFoundException
+PaymentAlreadyExistsException
+UnauthorizedPaymentException
+InvalidStatusForPaymentException
+```
+
+They are handled centrally by `GlobalExceptionHandler` with appropriate HTTP responses such as `404`, `403`, `409`, and `400`.
+
+### Payment Validation & Testing
+
+The payment workflow has been tested for:
+
+* Successful payment completion → `200 OK`
+* Non-admin attempting payment completion → `403 Forbidden`
+* Completing an already successful payment → `400 Bad Request`
+* Duplicate payment creation → `409 Conflict`
+* Unauthorized user attempting to pay another user's order → `403 Forbidden`
+* Payment for a non-`PENDING` order → `400 Bad Request`
+
+### Payment Business Rules
+
+```text
+One Order → One Payment
+
+Client controls:
+    paymentMethod
+
+Server controls:
+    amount
+    payment status
+    transactionId
+    order status transition
+```
+
+The payment amount is always copied from `Order.totalAmount`, preventing the client from submitting an arbitrary payment amount.
+
+### Git Milestone
+
+Payment development was completed on the `feature/payment` branch.
+
+```text
+8c9e567  complete payment module
+```
+
 
 ---
 
+## 💳 Payment APIs
+
+### 17. Create Payment
+
+```http
+POST /payments/{orderId}
+```
+
+**Authorization:** Authenticated USER/ADMIN
+
+**Request Body:**
+
+```json
+{
+  "paymentMethod": "UPI"
+}
+```
+
+The server derives the amount from the order and creates the payment with `PENDING` status.
+
+### 18. Complete Payment
+
+```http
+PUT /payments/{paymentId}/complete
+```
+
+**Authorization:** `ADMIN`
+
+**Request Body:** None
+
+Successful completion changes:
+
+```text
+Payment: PENDING → SUCCESS
+Order:   PENDING → CONFIRMED
+```
+
+---
+
+# 📦 Inventory Management
+
+Inventory management is the **current development focus**.
+
+## Inventory Design
+
+Inventory is maintained separately from Product:
+
+```text
+Product
+   │
+   │ 1 : 1
+   ▼
+Inventory
+   ├── availableStock
+   └── reservedStock
+```
+
+This separates product information from stock-management logic.
+
+### Stock Reservation
+
+Example:
+
+```text
+Before reservation:
+
+availableStock = 10
+reservedStock  = 0
+```
+
+Customer orders 3 units:
+
+```text
+availableStock = 7
+reservedStock  = 3
+```
+
+The reserved units are temporarily unavailable to other customers.
+
+### Successful Payment
+
+```text
+availableStock = 7
+reservedStock  = 0
+```
+
+The reserved units become sold.
+
+### Failed / Cancelled Payment
+
+```text
+availableStock = 10
+reservedStock  = 0
+```
+
+The reserved units are released.
+
+### Inventory Flow
+
+```text
+Place Order
+     ↓
+Reserve Stock
+     ↓
+Payment PENDING
+     ↓
+Payment SUCCESS
+     ↓
+Reserved Stock → Sold
+     ↓
+Order CONFIRMED
+```
+
+If payment fails or the order is cancelled:
+
+```text
+Reserved Stock
+      ↓
+Release Reservation
+      ↓
+Available Stock
+```
+
+### Insufficient Stock
+
+A dedicated exception will be used:
+
+```text
+InsufficientStockException
+```
+
+### Concurrent Orders
+
+Inventory must prevent overselling.
+
+Example:
+
+```text
+Stock = 5
+
+User A → requests 4
+User B → requests 4
+```
+
+Both requests must not be allowed to read and update the same stock value incorrectly.
+
+The implementation will use transaction/concurrency control so that stock remains consistent.
+
+---
 
 # 🔌 API Reference
 
@@ -871,7 +1211,7 @@ PUT /orders/{orderId}/cancel
 
 **Request Body:** None
 
-Cancellation is currently allowed only when the order status is `PENDING`.
+Cancellation is currently allowed only when the order status is `PENDING`. Inventory reservations will be released when cancellation is integrated.
 
 ### 26. Update Order Status
 
@@ -894,8 +1234,6 @@ Valid status flow:
 ```text
 PENDING
    ↓
-PROCESSING
-   ↓
 CONFIRMED
    ↓
 SHIPPED
@@ -904,6 +1242,8 @@ OUT_FOR_DELIVERY
    ↓
 DELIVERED
 ```
+
+For new orders, successful payment changes the order from `PENDING` to `CONFIRMED`.
 
 ---
 
@@ -997,6 +1337,7 @@ The payment must belong to the authenticated user's order, and only one payment 
 | 25 | PUT | `/orders/{orderId}/cancel` | Authenticated | None |
 | 26 | PUT | `/orders/{orderId}/status` | ADMIN | JSON |
 | 27 | POST | `/payments/{orderId}` | Authenticated | JSON |
+| 28 | PUT | `/payments/{paymentId}/complete` | ADMIN | None |
 
 ---
 
@@ -1118,6 +1459,13 @@ ProductNotFoundException
 CategoryNotFoundException
 CartItemNotFoundException
 InvalidCredentialsException
+OrderNotFoundException
+InvalidOrderStatusException
+PaymentNotFoundException
+PaymentAlreadyExistsException
+UnauthorizedPaymentException
+InvalidStatusForPaymentException
+InsufficientStockException
 ```
 
 API errors are returned using the common:
@@ -1152,6 +1500,18 @@ Current development branch:
 feature/payment
 ```
 
+Latest completed Payment milestone:
+
+```text
+8c9e567 complete payment module
+```
+
+Next feature branch:
+
+```text
+feature/inventory
+```
+
 Typical workflow:
 
 ```bash
@@ -1182,6 +1542,11 @@ Testing includes:
 * Cart operations
 * Order workflow
 * Payment validation and workflow
+* Duplicate payment scenarios
+* Unauthorized payment scenarios
+* Invalid payment status scenarios
+* Inventory stock validation
+* Concurrent stock scenarios
 
 ---
 
@@ -1276,6 +1641,9 @@ The goal of this project is not only to implement CRUD APIs but to demonstrate p
 * Transaction management
 * Exception handling
 * Database design
+* Inventory and stock management
+* Transaction management
+* Concurrency control
 * Git feature-branch workflow
 * Testing
 * Cloud deployment
@@ -1293,4 +1661,4 @@ Backend Developer | Java | Spring Boot | REST APIs | SQL | Automation Testing
 
 ## 📌 Current Focus
 
-> **Payment Module — Payment entity, DTOs, repository, service, and payment processing flow.**
+> **Inventory Management — Inventory entity, stock reservation, stock release, concurrency control, APIs, exception handling, and Order/Payment integration.**
