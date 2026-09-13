@@ -3,10 +3,12 @@ package com.arpit.ecommerce.service;
 import com.arpit.ecommerce.dto.request.ProductRequestDTO;
 import com.arpit.ecommerce.dto.response.ProductResponseDTO;
 import com.arpit.ecommerce.entity.Category;
+import com.arpit.ecommerce.entity.Inventory;
 import com.arpit.ecommerce.entity.Product;
 import com.arpit.ecommerce.exception.CategoryNotFoundException;
 import com.arpit.ecommerce.exception.ProductNotFoundException;
 import com.arpit.ecommerce.repository.CategoryRepository;
+import com.arpit.ecommerce.repository.InventoryRepository;
 import com.arpit.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,12 +24,22 @@ public class ProductService {
     @Autowired
     private CategoryRepository categoryRepository;
 
+    @Autowired
+    private InventoryRepository inventoryRepository;
+
     public ProductResponseDTO addProduct(ProductRequestDTO requestDTO){
         Category category = categoryRepository.findById(requestDTO.getCategoryId())
                 .orElseThrow(()-> new CategoryNotFoundException("Category not found with Id :"+ requestDTO.getCategoryId()));
         Product product = mapToEntity(requestDTO);
         product.setCategory(category);
         product = productRepository.save(product);
+
+        // create inventory for newly created product
+        Inventory inventory = new Inventory();
+        inventory.setProduct(product);
+        inventory.setAvailableStock(0);
+        inventory.setReservedStock(0);
+        inventoryRepository.save(inventory);
         return mapToResponseDTO(product);
     }
 
