@@ -39,10 +39,13 @@ public class SecurityConfig {
                         // Order APIs
                         .requestMatchers(HttpMethod.PUT,"/orders/*/status")
                         .hasRole("ADMIN")
-                        // Cart APIs
 
                         // Payment APIs
                         .requestMatchers(HttpMethod.PUT,"/payments/*/complete")
+                        .hasRole("ADMIN")
+
+                        // Inventory
+                        .requestMatchers(HttpMethod.PUT,"/inventory/**")
                         .hasRole("ADMIN")
 
                         // Any Request
@@ -55,7 +58,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-
-
 
 }
