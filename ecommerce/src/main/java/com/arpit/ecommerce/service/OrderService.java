@@ -41,6 +41,9 @@ public class OrderService {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private InventoryService inventoryService;
+
 
     // =========================
     // PLACE ORDER
@@ -292,9 +295,7 @@ public class OrderService {
         for (OrderItem orderItem : order.getOrderItems()) {
 
             OrderItemResponseDTO itemResponseDTO = new OrderItemResponseDTO();
-
             itemResponseDTO.setProductId( orderItem.getProduct().getId());
-
             itemResponseDTO.setProductName(
                     orderItem.getProduct().getName()
             );
