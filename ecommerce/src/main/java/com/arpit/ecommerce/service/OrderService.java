@@ -175,7 +175,7 @@ public class OrderService {
     // =========================
     // CANCEL ORDER
     // =========================
-
+    @Transactional
     public OrderResponseDTO cancelOrder(Long orderId) {
 
         Authentication authentication =
@@ -210,6 +210,10 @@ public class OrderService {
             );
         }
 
+        for (OrderItem orderItem : order.getOrderItems()){
+            inventoryService.releaseReserveStock(orderItem.getProduct().getId()
+                    ,orderItem.getQuantity());
+        }
         order.setStatus(OrderStatus.CANCELLED);
 
         orderRepository.save(order);
