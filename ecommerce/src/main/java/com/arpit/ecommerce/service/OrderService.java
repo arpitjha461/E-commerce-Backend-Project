@@ -79,7 +79,7 @@ public class OrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (CartItem cartItem : cart.getCartItems()) {
-
+            inventoryService.setReserveStock(cartItem.getProduct().getId(),cartItem.getQuantity());
             OrderItem orderItem = new OrderItem();
 
             orderItem.setOrder(order);
@@ -88,14 +88,8 @@ public class OrderService {
             orderItem.setPrice(cartItem.getProduct().getPrice());
 
             BigDecimal subtotal =
-                    cartItem.getProduct()
-                            .getPrice()
-                            .multiply(
-                                    BigDecimal.valueOf(
-                                            cartItem.getQuantity()
-                                    )
-                            );
-
+                    cartItem.getProduct().getPrice().multiply(BigDecimal
+                            .valueOf(cartItem.getQuantity()));
             totalAmount = totalAmount.add(subtotal);
 
             order.getOrderItems().add(orderItem);
@@ -109,7 +103,6 @@ public class OrderService {
 
         return mapToOrderResponseDTO(order);
     }
-
 
     // =========================
     // GET MY ORDERS
