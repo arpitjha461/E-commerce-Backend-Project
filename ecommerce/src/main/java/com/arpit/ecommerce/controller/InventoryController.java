@@ -2,6 +2,7 @@ package com.arpit.ecommerce.controller;
 
 import com.arpit.ecommerce.dto.request.InventoryRequestDTO;
 import com.arpit.ecommerce.dto.request.ReserveStockRequestDTO;
+import com.arpit.ecommerce.dto.response.InventoryResponseDTO;
 import com.arpit.ecommerce.service.InventoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,12 @@ public class InventoryController {
                                                   @Valid @RequestBody ReserveStockRequestDTO requestDTO){
         String message = inventoryService.setReserveStock(productId,requestDTO.getQuantity());
         return ResponseEntity.ok(message);
+    }
+    @GetMapping("/{productId}")
+    public ResponseEntity<InventoryResponseDTO> getInventory(
+            @PathVariable Long productId) {
+
+        return ResponseEntity.ok(inventoryService.getInventory(productId));
     }
 
 }

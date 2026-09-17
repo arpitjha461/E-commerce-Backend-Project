@@ -179,6 +179,18 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(InvalidSaleOperationException.class)
+    public ResponseEntity<ApiError> handleInvalidSaleOperationException(
+            InvalidSaleOperationException ex) {
+
+        ApiError apiError = new ApiError();
+        apiError.setTimestamp(LocalDateTime.now());
+        apiError.setMessage(ex.getMessage());
+        apiError.setStatus(HttpStatus.BAD_REQUEST.value());
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
 }
 
 
