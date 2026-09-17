@@ -18,7 +18,7 @@ The project follows a layered architecture and is being developed feature-by-fea
 | Cart Management          | ✅ Completed    |
 | Order Module             | ✅ Completed    |
 | Payment Module           | ✅ Completed   |
-| Inventory Management     | ⏳ Inprogress  |
+| Inventory Management     | ⏳ In Progress |
 | MongoDB Integration      | ⏳ Planned      |
 | Swagger/OpenAPI          | ⏳ Planned      |
 | Unit Testing             | ⏳ Planned      |
@@ -565,12 +565,14 @@ Check Payment = PENDING
   ↓
 Check Order = PENDING
   ↓
+Complete Sale for each OrderItem
+  ↓
 Payment → SUCCESS
   ↓
 Order → CONFIRMED
 ```
 
-`completePayment()` is transactional because Payment and Order are updated together.
+`completePayment()` is transactional so inventory finalization, payment status, and order status participate in the same transaction.
 
 The current payment flow is simulated; real payment gateway integration can be added later.
 
@@ -790,6 +792,32 @@ Inventory
 
 This separates product information from stock-management logic.
 
+### Inventory Entity
+
+```text
+inventory
+---------
+id
+product_id       ← FK + UNIQUE
+available_stock
+reserved_stock
+```
+
+A new Product automatically gets an Inventory record with:
+
+```text
+availableStock = 0
+reservedStock  = 0
+```
+
+### Inventory APIs
+
+```text
+PUT  /inventory/{productId}
+PUT  /inventory/{productId}/reserve
+GET  /inventory/{productId}
+```
+
 ### Stock Reservation
 
 Example:
@@ -812,21 +840,28 @@ The reserved units are temporarily unavailable to other customers.
 
 ### Successful Payment
 
+When payment succeeds:
+
 ```text
 availableStock = 7
 reservedStock  = 0
 ```
 
-The reserved units become sold.
+`availableStock` is not reduced again because it was already reduced during reservation. The reserved units are finalized as sold.
 
-### Failed / Cancelled Payment
+### Order Cancellation / Release
+
+If a pending order is cancelled:
 
 ```text
+availableStock = 7
+reservedStock  = 3
+
+        ↓ release 3
+
 availableStock = 10
 reservedStock  = 0
 ```
-
-The reserved units are released.
 
 ### Inventory Flow
 
@@ -844,7 +879,7 @@ Reserved Stock → Sold
 Order CONFIRMED
 ```
 
-If payment fails or the order is cancelled:
+If a pending order is cancelled:
 
 ```text
 Reserved Stock
@@ -854,17 +889,36 @@ Release Reservation
 Available Stock
 ```
 
-### Insufficient Stock
-
-A dedicated exception will be used:
+### Inventory Service Operations
 
 ```text
+setAvailableStock()
+setReserveStock()
+releaseReserveStock()
+completeSale()
+getInventory()
+```
+
+Reservation, release, and sale finalization use `@Transactional` and a pessimistic write lock to protect inventory updates.
+
+### Inventory Exceptions
+
+```text
+InventoryNotFoundException
 InsufficientStockException
+InvalidReleaseOperationException
+InvalidSaleOperationException
+```
+
+Examples:
+
+```text
+Requested stock > available stock
+Release quantity > reserved stock
+Sale quantity > reserved stock
 ```
 
 ### Concurrent Orders
-
-Inventory must prevent overselling.
 
 Example:
 
@@ -875,11 +929,60 @@ User A → requests 4
 User B → requests 4
 ```
 
-Both requests must not be allowed to read and update the same stock value incorrectly.
+The inventory repository uses a pessimistic database row lock:
 
-The implementation will use transaction/concurrency control so that stock remains consistent.
+```java
+@Lock(LockModeType.PESSIMISTIC_WRITE)
+```
 
----
+to prevent incorrect concurrent stock updates.
+
+### Inventory + Order Transaction
+
+Order placement reserves stock inside the order transaction. If a later item fails because of insufficient stock, earlier reservations are rolled back.
+
+### Inventory + Payment Transaction
+
+Payment completion finalizes every order item's reservation before confirming the order:
+
+```text
+Payment PENDING
+      ↓
+Complete Sale for OrderItem 1
+      ↓
+Complete Sale for OrderItem 2
+      ↓
+...
+      ↓
+Payment SUCCESS
+      ↓
+Order CONFIRMED
+```
+
+If any `completeSale()` operation fails, the transaction rolls back the earlier inventory changes and payment/order status changes.
+
+### Inventory Testing
+
+Tested manually using Postman and MySQL:
+
+```text
+✓ Product creation automatically creates Inventory
+✓ Initial availableStock = 0
+✓ Admin stock update
+✓ Stock reservation during order placement
+✓ availableStock decreases during reservation
+✓ reservedStock increases during reservation
+✓ Payment completion
+✓ reservedStock decreases after successful payment
+✓ availableStock remains unchanged after sale completion
+✓ Payment PENDING → SUCCESS
+✓ Order PENDING → CONFIRMED
+✓ Duplicate payment completion returns 400
+✓ Insufficient stock returns 400
+✓ Order transaction rollback on insufficient stock
+```
+
+Multi-product payment rollback is the remaining transaction-integrity test.
 
 # 🔌 API Reference
 
@@ -1306,6 +1409,62 @@ The payment must belong to the authenticated user's order, and only one payment 
 
 ---
 
+## 📦 Inventory APIs
+
+### 29. Update Available Stock
+
+```http
+PUT /inventory/{productId}
+```
+
+**Authorization:** `ADMIN`
+
+**Request Body:**
+
+```json
+{
+  "availableStock": 10
+}
+```
+
+### 30. Reserve Stock
+
+```http
+PUT /inventory/{productId}/reserve
+```
+
+**Authorization:** `ADMIN` for current isolated inventory testing
+
+**Request Body:**
+
+```json
+{
+  "quantity": 3
+}
+```
+
+### 31. Get Inventory
+
+```http
+GET /inventory/{productId}
+```
+
+**Authorization:** Authenticated
+
+**Request Body:** None
+
+Example response:
+
+```json
+{
+  "productId": 14,
+  "availableStock": 7,
+  "reservedStock": 0
+}
+```
+
+Inventory reservation and sale finalization are also invoked internally by the Order and Payment workflows.
+
 ## 📋 API Summary
 
 | # | Method | Endpoint | Authorization | Body |
@@ -1338,6 +1497,9 @@ The payment must belong to the authenticated user's order, and only one payment 
 | 26 | PUT | `/orders/{orderId}/status` | ADMIN | JSON |
 | 27 | POST | `/payments/{orderId}` | Authenticated | JSON |
 | 28 | PUT | `/payments/{paymentId}/complete` | ADMIN | None |
+| 29 | PUT | `/inventory/{productId}` | ADMIN | JSON |
+| 30 | PUT | `/inventory/{productId}/reserve` | ADMIN* | JSON |
+| 31 | GET | `/inventory/{productId}` | Authenticated | None |
 
 ---
 
@@ -1497,7 +1659,7 @@ main
 Current development branch:
 
 ```text
-feature/payment
+feature/inventory
 ```
 
 Latest completed Payment milestone:
@@ -1546,6 +1708,9 @@ Testing includes:
 * Unauthorized payment scenarios
 * Invalid payment status scenarios
 * Inventory stock validation
+* Stock reservation and release
+* Payment-to-inventory sale finalization
+* Transaction rollback scenarios
 * Concurrent stock scenarios
 
 ---
@@ -1661,4 +1826,4 @@ Backend Developer | Java | Spring Boot | REST APIs | SQL | Automation Testing
 
 ## 📌 Current Focus
 
-> **Inventory Management — Inventory entity, stock reservation, stock release, concurrency control, APIs, exception handling, and Order/Payment integration.**
+> **Inventory Management — Inventory entity, stock reservation, stock release, concurrency control, APIs, exception handling, and Order/Payment integration testing.**
