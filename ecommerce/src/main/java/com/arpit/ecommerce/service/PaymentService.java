@@ -3,6 +3,7 @@ package com.arpit.ecommerce.service;
 import com.arpit.ecommerce.dto.request.PaymentRequestDTO;
 import com.arpit.ecommerce.dto.response.PaymentResponseDTO;
 import com.arpit.ecommerce.entity.Order;
+import com.arpit.ecommerce.entity.OrderItem;
 import com.arpit.ecommerce.entity.Payment;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.enums.OrderStatus;
@@ -30,6 +31,9 @@ public class PaymentService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    InventoryService inventoryService;
 
     public PaymentResponseDTO createPayment(Long orderId, PaymentRequestDTO requestDTO){
         Authentication authentication = SecurityContextHolder.getContext()
@@ -80,6 +84,9 @@ public class PaymentService {
                     + order.getStatus());
         }
         payment.setStatus(PaymentStatus.SUCCESS);
+        for (OrderItem orderItem: order.getOrderItems()){
+            inventoryService.completeSale(orderItem.getProduct().getId(),orderItem.getQuantity());
+        }
         order.setStatus(OrderStatus.CONFIRMED);
         paymentRepository.save(payment);
 

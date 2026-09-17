@@ -41,6 +41,9 @@ public class OrderService {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private InventoryService inventoryService;
+
 
     // =========================
     // PLACE ORDER
@@ -76,7 +79,7 @@ public class OrderService {
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (CartItem cartItem : cart.getCartItems()) {
-
+            inventoryService.setReserveStock(cartItem.getProduct().getId(),cartItem.getQuantity());
             OrderItem orderItem = new OrderItem();
 
             orderItem.setOrder(order);
@@ -85,14 +88,8 @@ public class OrderService {
             orderItem.setPrice(cartItem.getProduct().getPrice());
 
             BigDecimal subtotal =
-                    cartItem.getProduct()
-                            .getPrice()
-                            .multiply(
-                                    BigDecimal.valueOf(
-                                            cartItem.getQuantity()
-                                    )
-                            );
-
+                    cartItem.getProduct().getPrice().multiply(BigDecimal
+                            .valueOf(cartItem.getQuantity()));
             totalAmount = totalAmount.add(subtotal);
 
             order.getOrderItems().add(orderItem);
@@ -106,7 +103,6 @@ public class OrderService {
 
         return mapToOrderResponseDTO(order);
     }
-
 
     // =========================
     // GET MY ORDERS
@@ -172,7 +168,7 @@ public class OrderService {
     // =========================
     // CANCEL ORDER
     // =========================
-
+    @Transactional
     public OrderResponseDTO cancelOrder(Long orderId) {
 
         Authentication authentication =
@@ -207,6 +203,10 @@ public class OrderService {
             );
         }
 
+        for (OrderItem orderItem : order.getOrderItems()){
+            inventoryService.releaseReserveStock(orderItem.getProduct().getId()
+                    ,orderItem.getQuantity());
+        }
         order.setStatus(OrderStatus.CANCELLED);
 
         orderRepository.save(order);
@@ -292,9 +292,7 @@ public class OrderService {
         for (OrderItem orderItem : order.getOrderItems()) {
 
             OrderItemResponseDTO itemResponseDTO = new OrderItemResponseDTO();
-
             itemResponseDTO.setProductId( orderItem.getProduct().getId());
-
             itemResponseDTO.setProductName(
                     orderItem.getProduct().getName()
             );
