@@ -44,6 +44,9 @@ public class OrderService {
     @Autowired
     private InventoryService inventoryService;
 
+    @Autowired
+    private OrderEventService orderEventService;
+
 
     // =========================
     // PLACE ORDER
@@ -98,6 +101,7 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
 
         orderRepository.save(order);
+        orderEventService.createOrderPlacedEvent(user.getId(), order.getId());
 
         cartService.clearCart(user.getId());
 
