@@ -13,12 +13,14 @@ public class OrderEventService {
     private OrderEventRepository orderEventRepository;
 
     public void createOrderPlacedEvent(Long userId, Long orderId){
+
         OrderEvent orderEvent = new OrderEvent();
         orderEvent.setEventType("ORDER_PLACED");
         orderEvent.setOrderId(orderId);
         orderEvent.setStatus("PENDING");
         orderEvent.setUserId(userId);
         orderEvent.setTimestamp(LocalDateTime.now());
+
         orderEventRepository.save(orderEvent);
 
     }
