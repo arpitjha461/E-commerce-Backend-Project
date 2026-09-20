@@ -22,6 +22,29 @@ public class OrderEventService {
         orderEvent.setTimestamp(LocalDateTime.now());
 
         orderEventRepository.save(orderEvent);
+    }
 
+    public void createOrderStatusChangedEvent(Long userId, Long orderId, String status){
+        OrderEvent orderEvent = new OrderEvent();
+        orderEvent.setEventType("ORDER_STATUS_CHANGED");
+        orderEvent.setUserId(userId);
+        orderEvent.setOrderId(orderId);
+        orderEvent.setStatus(status);
+        orderEvent.setTimestamp(LocalDateTime.now());
+
+        orderEventRepository.save(orderEvent);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

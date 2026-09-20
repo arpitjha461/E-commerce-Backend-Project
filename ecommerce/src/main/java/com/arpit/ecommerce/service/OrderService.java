@@ -254,8 +254,7 @@ public class OrderService {
     // UPDATE ORDER STATUS
     // =========================
 
-    public OrderResponseDTO updateOrderStatus(
-            Long orderId,
+    public OrderResponseDTO updateOrderStatus(Long orderId,
             UpdateOrderStatusRequestDTO requestDTO) {
 
         Order order = orderRepository.findById(orderId)
@@ -273,6 +272,8 @@ public class OrderService {
 
         order.setStatus(requestDTO.getStatus());
         orderRepository.save(order);
+        orderEventService.createOrderStatusChangedEvent(order.getUser().getId(),
+                order.getId(), order.getStatus().name());
 
         return mapToOrderResponseDTO(order);
     }
