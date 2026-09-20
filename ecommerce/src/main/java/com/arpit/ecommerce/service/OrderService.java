@@ -214,10 +214,10 @@ public class OrderService {
         order.setStatus(OrderStatus.CANCELLED);
 
         orderRepository.save(order);
+        orderEventService.createOrderStatusChangedEvent(order.getUser().getId(),order.getId(),order.getStatus().name());
 
         return mapToOrderResponseDTO(order);
     }
-
 
     // =========================
     // VALID STATUS TRANSITION
