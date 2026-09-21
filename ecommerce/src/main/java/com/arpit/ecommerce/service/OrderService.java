@@ -1,5 +1,6 @@
 package com.arpit.ecommerce.service;
 
+import com.arpit.ecommerce.dto.request.PlaceOrderRequestDTO;
 import com.arpit.ecommerce.dto.request.UpdateOrderStatusRequestDTO;
 import com.arpit.ecommerce.dto.response.OrderItemResponseDTO;
 import com.arpit.ecommerce.dto.response.OrderResponseDTO;
@@ -9,6 +10,7 @@ import com.arpit.ecommerce.entity.Order;
 import com.arpit.ecommerce.entity.OrderItem;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.enums.OrderStatus;
+import com.arpit.ecommerce.enums.PaymentMethod;
 import com.arpit.ecommerce.exception.CartEmptyException;
 import com.arpit.ecommerce.exception.InvalidOrderStatusException;
 import com.arpit.ecommerce.exception.OrderNotFoundException;
@@ -53,7 +55,7 @@ public class OrderService {
     // =========================
 
     @Transactional
-    public OrderResponseDTO placeOrder() {
+    public OrderResponseDTO placeOrder(PlaceOrderRequestDTO requestDTO) {
 
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
@@ -77,7 +79,12 @@ public class OrderService {
         Order order = new Order();
 
         order.setUser(user);
-        order.setStatus(OrderStatus.PENDING);
+        if (requestDTO.getPaymentMethod().equals(PaymentMethod.COD)){
+            order.setStatus(OrderStatus.CONFIRMED);
+        }
+        else {
+            order.setStatus(OrderStatus.PENDING);
+        }
 
         BigDecimal totalAmount = BigDecimal.ZERO;
 
@@ -101,7 +108,7 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
 
         orderRepository.save(order);
-        orderEventService.createOrderPlacedEvent(user.getId(), order.getId());
+        orderEventService.createOrderPlacedEvent(user.getId(), order.getId(),order.getStatus().name());
 
         cartService.clearCart(user.getId());
 
