@@ -7,6 +7,7 @@ import com.arpit.ecommerce.entity.OrderItem;
 import com.arpit.ecommerce.entity.Payment;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.enums.OrderStatus;
+import com.arpit.ecommerce.enums.PaymentMethod;
 import com.arpit.ecommerce.enums.PaymentStatus;
 import com.arpit.ecommerce.exception.*;
 import com.arpit.ecommerce.repository.OrderRepository;
@@ -48,9 +49,13 @@ public class PaymentService {
         if (!order.getUser().getId().equals(user.getId())){
             throw new UnauthorizedPaymentException("Unauthorized payment for this order");
         }
-        if(!OrderStatus.PENDING.equals(order.getStatus())){
-            throw new InvalidStatusForPaymentException("Payment is not allowed for order with status: "+
-                    order.getStatus());
+        if (!(OrderStatus.PENDING.equals(order.getStatus())
+                || OrderStatus.CONFIRMED.equals(order.getStatus()))) {
+
+            throw new InvalidStatusForPaymentException(
+                    "Payment is not allowed for order with status: "
+                            + order.getStatus()
+            );
         }
 
         if (paymentRepository.findByOrder(order).isPresent()){
@@ -60,7 +65,7 @@ public class PaymentService {
         Payment payment = new Payment();
         payment.setOrder(order);
         payment.setAmount(order.getTotalAmount());
-        payment.setPaymentMethod(requestDTO.getPaymentMethod());
+        payment.setPaymentMethod(order.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
         payment.setTransactionId(UUID.randomUUID().toString());
 
@@ -79,15 +84,29 @@ public class PaymentService {
         }
 
         Order order = payment.getOrder();
-        if (!OrderStatus.PENDING.equals(order.getStatus())){
-            throw new InvalidOrderStatusException("Payment cannot be completed for order with status: "
-                    + order.getStatus());
+        if(PaymentMethod.COD.equals(payment.getPaymentMethod())){
+            // COD payment collected at payment
+            if (!OrderStatus.OUT_FOR_DELIVERY.equals(order.getStatus())){
+                throw new InvalidOrderStatusException(
+                        "COD payment can be completed only when order is OUT_FOR_DELIVERY");
+            }
+            payment.setStatus(PaymentStatus.SUCCESS);
+            for (OrderItem orderItem : order.getOrderItems()){
+                inventoryService.completeSale(orderItem.getProduct().getId(),orderItem.getQuantity());
+            }
+            order.setStatus(OrderStatus.DELIVERED);
         }
-        payment.setStatus(PaymentStatus.SUCCESS);
-        for (OrderItem orderItem: order.getOrderItems()){
-            inventoryService.completeSale(orderItem.getProduct().getId(),orderItem.getQuantity());
+        else{
+            if (!OrderStatus.PENDING.equals(order.getStatus())) {
+                throw new InvalidOrderStatusException("Payment cannot be completed for order with status: "
+                        + order.getStatus());
+            }
+            payment.setStatus(PaymentStatus.SUCCESS);
+            for (OrderItem orderItem : order.getOrderItems()) {
+                inventoryService.completeSale(orderItem.getProduct().getId(), orderItem.getQuantity());
+            }
+            order.setStatus(OrderStatus.CONFIRMED);
         }
-        order.setStatus(OrderStatus.CONFIRMED);
         paymentRepository.save(payment);
 
         return mapToPaymentResponseDTO(payment);
