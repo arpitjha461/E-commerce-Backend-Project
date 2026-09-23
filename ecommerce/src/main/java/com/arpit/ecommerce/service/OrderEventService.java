@@ -12,12 +12,12 @@ public class OrderEventService {
     @Autowired
     private OrderEventRepository orderEventRepository;
 
-    public void createOrderPlacedEvent(Long userId, Long orderId){
+    public void createOrderPlacedEvent(Long userId, Long orderId, String status){
 
         OrderEvent orderEvent = new OrderEvent();
         orderEvent.setEventType("ORDER_PLACED");
         orderEvent.setOrderId(orderId);
-        orderEvent.setStatus("PENDING");
+        orderEvent.setStatus(status);
         orderEvent.setUserId(userId);
         orderEvent.setTimestamp(LocalDateTime.now());
 
