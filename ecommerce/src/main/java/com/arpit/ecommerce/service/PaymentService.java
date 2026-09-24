@@ -34,7 +34,11 @@ public class PaymentService {
     private UserRepository userRepository;
 
     @Autowired
-    InventoryService inventoryService;
+    private InventoryService inventoryService;
+
+    @Autowired
+    private OrderEventService orderEventService;
+
 
     public PaymentResponseDTO createPayment(Long orderId, PaymentRequestDTO requestDTO){
         Authentication authentication = SecurityContextHolder.getContext()
@@ -85,7 +89,7 @@ public class PaymentService {
 
         Order order = payment.getOrder();
         if(PaymentMethod.COD.equals(payment.getPaymentMethod())){
-            // COD payment collected at payment
+            // COD payment collected at delivery
             if (!OrderStatus.OUT_FOR_DELIVERY.equals(order.getStatus())){
                 throw new InvalidOrderStatusException(
                         "COD payment can be completed only when order is OUT_FOR_DELIVERY");
@@ -95,6 +99,7 @@ public class PaymentService {
                 inventoryService.completeSale(orderItem.getProduct().getId(),orderItem.getQuantity());
             }
             order.setStatus(OrderStatus.DELIVERED);
+            orderEventService.createOrderStatusChangedEvent(order.getUser().getId(),order.getId(),order.getStatus().name());
         }
         else{
             if (!OrderStatus.PENDING.equals(order.getStatus())) {
@@ -106,8 +111,10 @@ public class PaymentService {
                 inventoryService.completeSale(orderItem.getProduct().getId(), orderItem.getQuantity());
             }
             order.setStatus(OrderStatus.CONFIRMED);
+            orderEventService.createOrderStatusChangedEvent(order.getUser().getId(),order.getId(),order.getStatus().name());
         }
         paymentRepository.save(payment);
+        orderRepository.save(order);
 
         return mapToPaymentResponseDTO(payment);
     }
@@ -125,16 +132,3 @@ public class PaymentService {
         return responseDTO;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
