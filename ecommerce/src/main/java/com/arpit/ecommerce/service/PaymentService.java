@@ -68,10 +68,13 @@ public class PaymentService {
 
         Payment payment = new Payment();
         payment.setOrder(order);
+
+
         payment.setAmount(order.getTotalAmount());
         payment.setPaymentMethod(order.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
         payment.setTransactionId(UUID.randomUUID().toString());
+
 
         paymentRepository.save(payment);
 
