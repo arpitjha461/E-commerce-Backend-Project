@@ -79,7 +79,8 @@ public class OrderService {
         Order order = new Order();
 
         order.setUser(user);
-        if (requestDTO.getPaymentMethod().equals(PaymentMethod.COD)){
+        order.setPaymentMethod(requestDTO.getPaymentMethod());
+        if (PaymentMethod.COD.equals(requestDTO.getPaymentMethod())){
             order.setStatus(OrderStatus.CONFIRMED);
         }
         else {
