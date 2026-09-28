@@ -86,7 +86,6 @@ public class OrderService {
         else {
             order.setStatus(OrderStatus.PENDING);
         }
-
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (CartItem cartItem : cart.getCartItems()) {
