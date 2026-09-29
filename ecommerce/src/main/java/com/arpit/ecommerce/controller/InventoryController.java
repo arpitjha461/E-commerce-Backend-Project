@@ -34,5 +34,4 @@ public class InventoryController {
 
         return ResponseEntity.ok(inventoryService.getInventory(productId));
     }
-
 }
