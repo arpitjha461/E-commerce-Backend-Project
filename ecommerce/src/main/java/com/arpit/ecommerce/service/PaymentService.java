@@ -1,6 +1,5 @@
 package com.arpit.ecommerce.service;
 
-import com.arpit.ecommerce.dto.request.PaymentRequestDTO;
 import com.arpit.ecommerce.dto.response.PaymentResponseDTO;
 import com.arpit.ecommerce.entity.Order;
 import com.arpit.ecommerce.entity.OrderItem;
@@ -40,7 +39,7 @@ public class PaymentService {
     private OrderEventService orderEventService;
 
 
-    public PaymentResponseDTO createPayment(Long orderId, PaymentRequestDTO requestDTO){
+    public PaymentResponseDTO createPayment(Long orderId){
         Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         String email = authentication.getName();
