@@ -1,5 +1,6 @@
 package com.arpit.ecommerce.service;
 
+import com.arpit.ecommerce.dto.request.PlaceOrderRequestDTO;
 import com.arpit.ecommerce.dto.request.UpdateOrderStatusRequestDTO;
 import com.arpit.ecommerce.dto.response.OrderItemResponseDTO;
 import com.arpit.ecommerce.dto.response.OrderResponseDTO;
@@ -9,6 +10,7 @@ import com.arpit.ecommerce.entity.Order;
 import com.arpit.ecommerce.entity.OrderItem;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.enums.OrderStatus;
+import com.arpit.ecommerce.enums.PaymentMethod;
 import com.arpit.ecommerce.exception.CartEmptyException;
 import com.arpit.ecommerce.exception.InvalidOrderStatusException;
 import com.arpit.ecommerce.exception.OrderNotFoundException;
@@ -44,13 +46,16 @@ public class OrderService {
     @Autowired
     private InventoryService inventoryService;
 
+    @Autowired
+    private OrderEventService orderEventService;
+
 
     // =========================
     // PLACE ORDER
     // =========================
 
     @Transactional
-    public OrderResponseDTO placeOrder() {
+    public OrderResponseDTO placeOrder(PlaceOrderRequestDTO requestDTO) {
 
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
@@ -74,8 +79,13 @@ public class OrderService {
         Order order = new Order();
 
         order.setUser(user);
-        order.setStatus(OrderStatus.PENDING);
-
+        order.setPaymentMethod(requestDTO.getPaymentMethod());
+        if (PaymentMethod.COD.equals(requestDTO.getPaymentMethod())){
+            order.setStatus(OrderStatus.CONFIRMED);
+        }
+        else {
+            order.setStatus(OrderStatus.PENDING);
+        }
         BigDecimal totalAmount = BigDecimal.ZERO;
 
         for (CartItem cartItem : cart.getCartItems()) {
@@ -98,6 +108,7 @@ public class OrderService {
         order.setTotalAmount(totalAmount);
 
         orderRepository.save(order);
+        orderEventService.createOrderPlacedEvent(user.getId(), order.getId(),order.getStatus().name());
 
         cartService.clearCart(user.getId());
 
@@ -210,10 +221,10 @@ public class OrderService {
         order.setStatus(OrderStatus.CANCELLED);
 
         orderRepository.save(order);
+        orderEventService.createOrderStatusChangedEvent(order.getUser().getId(),order.getId(),order.getStatus().name());
 
         return mapToOrderResponseDTO(order);
     }
-
 
     // =========================
     // VALID STATUS TRANSITION
@@ -250,8 +261,7 @@ public class OrderService {
     // UPDATE ORDER STATUS
     // =========================
 
-    public OrderResponseDTO updateOrderStatus(
-            Long orderId,
+    public OrderResponseDTO updateOrderStatus(Long orderId,
             UpdateOrderStatusRequestDTO requestDTO) {
 
         Order order = orderRepository.findById(orderId)
@@ -269,6 +279,8 @@ public class OrderService {
 
         order.setStatus(requestDTO.getStatus());
         orderRepository.save(order);
+        orderEventService.createOrderStatusChangedEvent(order.getUser().getId(),
+                order.getId(), order.getStatus().name());
 
         return mapToOrderResponseDTO(order);
     }

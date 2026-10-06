@@ -3,9 +3,9 @@ package com.arpit.ecommerce.dto.request;
 import com.arpit.ecommerce.enums.PaymentMethod;
 import jakarta.validation.constraints.NotNull;
 
-public class PaymentRequestDTO {
+public class PlaceOrderRequestDTO {
 
-    @NotNull(message = "Payment method is required")
+    @NotNull(message ="Payment method is required")
     private PaymentMethod paymentMethod;
 
     public PaymentMethod getPaymentMethod() {

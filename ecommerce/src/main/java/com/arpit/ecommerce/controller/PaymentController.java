@@ -16,9 +16,9 @@ public class PaymentController {
     private PaymentService paymentService;
 
     @PostMapping("/{orderId}")
-    public ResponseEntity<PaymentResponseDTO> createPayment(@PathVariable Long orderId,
-                                                            @Valid @RequestBody PaymentRequestDTO requestDTO){
-        PaymentResponseDTO responseDTO = paymentService.createPayment(orderId,requestDTO);
+    public ResponseEntity<PaymentResponseDTO> createPayment(@PathVariable Long orderId){
+
+        PaymentResponseDTO responseDTO = paymentService.createPayment(orderId);
         return ResponseEntity.ok(responseDTO);
     }
     @PutMapping("/{paymentId}/complete")

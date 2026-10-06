@@ -37,7 +37,7 @@ public class ProductService {
         // create inventory for newly created product
         Inventory inventory = new Inventory();
         inventory.setProduct(product);
-        inventory.setAvailableStock(0);
+        inventory.setAvailableStock(requestDTO.getStock());
         inventory.setReservedStock(0);
         inventoryRepository.save(inventory);
         return mapToResponseDTO(product);

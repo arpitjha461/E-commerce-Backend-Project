@@ -1,12 +1,12 @@
 package com.arpit.ecommerce.service;
 
-import com.arpit.ecommerce.dto.request.PaymentRequestDTO;
 import com.arpit.ecommerce.dto.response.PaymentResponseDTO;
 import com.arpit.ecommerce.entity.Order;
 import com.arpit.ecommerce.entity.OrderItem;
 import com.arpit.ecommerce.entity.Payment;
 import com.arpit.ecommerce.entity.User;
 import com.arpit.ecommerce.enums.OrderStatus;
+import com.arpit.ecommerce.enums.PaymentMethod;
 import com.arpit.ecommerce.enums.PaymentStatus;
 import com.arpit.ecommerce.exception.*;
 import com.arpit.ecommerce.repository.OrderRepository;
@@ -33,9 +33,13 @@ public class PaymentService {
     private UserRepository userRepository;
 
     @Autowired
-    InventoryService inventoryService;
+    private InventoryService inventoryService;
 
-    public PaymentResponseDTO createPayment(Long orderId, PaymentRequestDTO requestDTO){
+    @Autowired
+    private OrderEventService orderEventService;
+
+
+    public PaymentResponseDTO createPayment(Long orderId){
         Authentication authentication = SecurityContextHolder.getContext()
                 .getAuthentication();
         String email = authentication.getName();
@@ -48,9 +52,13 @@ public class PaymentService {
         if (!order.getUser().getId().equals(user.getId())){
             throw new UnauthorizedPaymentException("Unauthorized payment for this order");
         }
-        if(!OrderStatus.PENDING.equals(order.getStatus())){
-            throw new InvalidStatusForPaymentException("Payment is not allowed for order with status: "+
-                    order.getStatus());
+        if (!(OrderStatus.PENDING.equals(order.getStatus())
+                || OrderStatus.CONFIRMED.equals(order.getStatus()))) {
+
+            throw new InvalidStatusForPaymentException(
+                    "Payment is not allowed for order with status: "
+                            + order.getStatus()
+            );
         }
 
         if (paymentRepository.findByOrder(order).isPresent()){
@@ -59,8 +67,9 @@ public class PaymentService {
 
         Payment payment = new Payment();
         payment.setOrder(order);
+
         payment.setAmount(order.getTotalAmount());
-        payment.setPaymentMethod(requestDTO.getPaymentMethod());
+        payment.setPaymentMethod(order.getPaymentMethod());
         payment.setStatus(PaymentStatus.PENDING);
         payment.setTransactionId(UUID.randomUUID().toString());
 
@@ -79,16 +88,33 @@ public class PaymentService {
         }
 
         Order order = payment.getOrder();
-        if (!OrderStatus.PENDING.equals(order.getStatus())){
-            throw new InvalidOrderStatusException("Payment cannot be completed for order with status: "
-                    + order.getStatus());
+        if(PaymentMethod.COD.equals(payment.getPaymentMethod())){
+            // COD payment collected at delivery
+            if (!OrderStatus.OUT_FOR_DELIVERY.equals(order.getStatus())){
+                throw new InvalidOrderStatusException(
+                        "COD payment can be completed only when order is OUT_FOR_DELIVERY");
+            }
+            payment.setStatus(PaymentStatus.SUCCESS);
+            for (OrderItem orderItem : order.getOrderItems()){
+                inventoryService.completeSale(orderItem.getProduct().getId(),orderItem.getQuantity());
+            }
+            order.setStatus(OrderStatus.DELIVERED);
+            orderEventService.createOrderStatusChangedEvent(order.getUser().getId(),order.getId(),order.getStatus().name());
         }
-        payment.setStatus(PaymentStatus.SUCCESS);
-        for (OrderItem orderItem: order.getOrderItems()){
-            inventoryService.completeSale(orderItem.getProduct().getId(),orderItem.getQuantity());
+        else{
+            if (!OrderStatus.PENDING.equals(order.getStatus())) {
+                throw new InvalidOrderStatusException("Payment cannot be completed for order with status: "
+                        + order.getStatus());
+            }
+            payment.setStatus(PaymentStatus.SUCCESS);
+            for (OrderItem orderItem : order.getOrderItems()) {
+                inventoryService.completeSale(orderItem.getProduct().getId(), orderItem.getQuantity());
+            }
+            order.setStatus(OrderStatus.CONFIRMED);
+            orderEventService.createOrderStatusChangedEvent(order.getUser().getId(),order.getId(),order.getStatus().name());
         }
-        order.setStatus(OrderStatus.CONFIRMED);
         paymentRepository.save(payment);
+        orderRepository.save(order);
 
         return mapToPaymentResponseDTO(payment);
     }
@@ -106,16 +132,3 @@ public class PaymentService {
         return responseDTO;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

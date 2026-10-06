@@ -1,5 +1,6 @@
 package com.arpit.ecommerce.controller;
 
+import com.arpit.ecommerce.dto.request.PlaceOrderRequestDTO;
 import com.arpit.ecommerce.dto.request.UpdateOrderStatusRequestDTO;
 import com.arpit.ecommerce.dto.response.OrderResponseDTO;
 import com.arpit.ecommerce.service.OrderService;
@@ -17,8 +18,8 @@ public class OrderController {
     private OrderService orderService;
 
     @PostMapping("/place")
-    public ResponseEntity<OrderResponseDTO> placeOrder(){
-        OrderResponseDTO responseDTO = orderService.placeOrder();
+    public ResponseEntity<OrderResponseDTO> placeOrder(@Valid @RequestBody PlaceOrderRequestDTO requestDTO){
+        OrderResponseDTO responseDTO = orderService.placeOrder(requestDTO);
         return ResponseEntity.ok(responseDTO);
     }
     @GetMapping("/my-orders")
