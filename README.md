@@ -20,7 +20,7 @@ The project follows a layered architecture and is being developed feature-by-fea
 | Payment Module           | ✅ Completed   |
 | Inventory Management     | ✅ Completed  |
 | MongoDB Integration      | ✅ Completed    |
-| Swagger/OpenAPI          | ⏳ Planned      |
+| Swagger/OpenAPI          | ⏳ Inprogress       |
 | Unit Testing             | ⏳ Planned      |
 | Docker                   | ⏳ Planned      |
 | CI/CD                    | ⏳ Planned      |
