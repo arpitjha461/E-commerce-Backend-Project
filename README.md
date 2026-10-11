@@ -17,10 +17,10 @@ The project follows a layered architecture and is being developed feature-by-fea
 | Product Management       | ✅ Completed    |
 | Cart Management          | ✅ Completed    |
 | Order Module             | ✅ Completed    |
-| Payment Module           | ✅ Completed   |
-| Inventory Management     | ✅ Completed  |
+| Payment Module           | ✅ Completed    |
+| Inventory Management     | ✅ Completed    |
 | MongoDB Integration      | ✅ Completed    |
-| Swagger/OpenAPI          | ⏳ Inprogress       |
+| Swagger/OpenAPI          | ⏳ Inprogress   |
 | Unit Testing             | ⏳ Planned      |
 | Docker                   | ⏳ Planned      |
 | CI/CD                    | ⏳ Planned      |
