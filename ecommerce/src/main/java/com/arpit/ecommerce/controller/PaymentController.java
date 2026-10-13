@@ -1,6 +1,5 @@
 package com.arpit.ecommerce.controller;
 
-import com.arpit.ecommerce.dto.request.PaymentRequestDTO;
 import com.arpit.ecommerce.dto.response.PaymentResponseDTO;
 import com.arpit.ecommerce.service.PaymentService;
 import jakarta.validation.Valid;
