@@ -64,8 +64,15 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @Operation(
+            summary = "Login User",
+            description = "Authenticates the User and returns a JWT token"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Login successful; JWT token returned"),
+            @ApiResponse(responseCode = "400", description = "Invalid request data"),
+            @ApiResponse(responseCode = "401", description = "Invalid email or password")})
     public LoginResponseDTO login(@Valid @RequestBody LoginRequestDTO loginRequestDTO){
-        System.out.println("LOGIN API HIT");
        return userService.login(loginRequestDTO);
     }
 }
