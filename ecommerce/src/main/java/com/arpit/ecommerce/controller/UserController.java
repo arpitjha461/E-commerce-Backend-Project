@@ -49,16 +49,48 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
+    @Operation(
+            summary = "Get user by ID",
+            description = "Retrieves a user by their unique ID"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public UserResponseDTO getUserById(@PathVariable Long id){
 
         return userService.getUserById(id);
     }
 
     @PutMapping("/{id}")
+    @Operation(
+            summary = "Update user",
+            description = "Updates an existing user's information by ID"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid user data"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public UserResponseDTO userUpdate(@PathVariable Long id,@Valid @RequestBody UserRequestDTO requestDTO){
         return userService.updateUser(id, requestDTO);
     }
+
     @DeleteMapping("/{id}")
+    @Operation(
+            summary = "Delete user",
+            description = "Deletes an existing user by their unique ID"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     public String deleteUser(@PathVariable Long id){
         return  userService.deleteUser(id);
     }
