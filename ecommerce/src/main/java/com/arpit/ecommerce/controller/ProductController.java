@@ -60,7 +60,8 @@ public class ProductController {
         return productService.getProductById(id);
     }
 
-    @PutMapping("/{id}")@Operation(summary = "Update a product",
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a product",
             description = "Updates an existing product by ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Product updated successfully"),
@@ -69,7 +70,6 @@ public class ProductController {
             @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
-
     public ProductResponseDTO updateProduct(@PathVariable Long id,
                                             @Valid @RequestBody ProductRequestDTO requestDTO){
         return productService.updateProduct(id,requestDTO);
