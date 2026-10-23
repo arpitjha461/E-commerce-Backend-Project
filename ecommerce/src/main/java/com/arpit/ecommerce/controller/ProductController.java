@@ -4,6 +4,7 @@ import com.arpit.ecommerce.dto.request.ProductRequestDTO;
 import com.arpit.ecommerce.dto.response.ProductResponseDTO;
 import com.arpit.ecommerce.service.ProductService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -56,7 +57,9 @@ public class ProductController {
             @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
-    public ProductResponseDTO getProductById(@PathVariable Long id){
+    public ProductResponseDTO getProductById(
+            @Parameter(description = "Unique ID of the product to retrieve", example = "1")
+            @PathVariable Long id){
         return productService.getProductById(id);
     }
 
@@ -70,8 +73,10 @@ public class ProductController {
             @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
-    public ProductResponseDTO updateProduct(@PathVariable Long id,
-                                            @Valid @RequestBody ProductRequestDTO requestDTO){
+    public ProductResponseDTO updateProduct(
+            @Parameter(description = "Unique ID of the product to update", example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody ProductRequestDTO requestDTO){
         return productService.updateProduct(id,requestDTO);
     }
 
@@ -84,7 +89,9 @@ public class ProductController {
             @ApiResponse(responseCode = "403", description = "Insufficient permissions"),
             @ApiResponse(responseCode = "404", description = "Product not found")
     })
-    public String deleteProduct(@PathVariable Long id){
+    public String deleteProduct(
+            @Parameter(description = "Unique ID of the product to delete", example = "1")
+            @PathVariable Long id){
         return productService.deleteProduct(id);
     }
 }
