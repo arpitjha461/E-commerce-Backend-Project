@@ -20,7 +20,7 @@ The project follows a layered architecture and is being developed feature-by-fea
 | Payment Module           | 🚧 In Progress |
 | Inventory Management     | ⏳ Planned      |
 | MongoDB Integration      | ⏳ Planned      |
-| Swagger/OpenAPI          | ⏳ Planned      |
+| Swagger/OpenAPI          | 🚧 In Progress |
 | Unit Testing             | ⏳ Planned      |
 | Docker                   | ⏳ Planned      |
 | CI/CD                    | ⏳ Planned      |
@@ -1254,11 +1254,13 @@ Integration Testing
 
 ### API Documentation
 
-Planned:
+In progress:
 
 ```text
 Swagger / OpenAPI
 ```
+
+Product endpoints have initial OpenAPI annotations for endpoint summaries, response codes, and product ID path parameters.
 
 ---
 
