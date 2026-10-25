@@ -1262,6 +1262,14 @@ Swagger / OpenAPI
 
 Product endpoints have initial OpenAPI annotations for endpoint summaries, response codes, and product ID path parameters.
 
+#### Open Swagger UI locally
+
+1. Start the Spring Boot application.
+2. Open the interactive API documentation at [http://localhost:8765/swagger-ui/index.html](http://localhost:8765/swagger-ui/index.html).
+3. To inspect the generated OpenAPI specification as JSON, visit [http://localhost:8765/v3/api-docs](http://localhost:8765/v3/api-docs).
+
+These local URLs use the configured application port `8765`.
+
 ---
 
 # 🎯 Project Goals
