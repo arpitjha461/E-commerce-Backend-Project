@@ -4,6 +4,33 @@ A RESTful e-commerce backend application built using **Java, Spring Boot, Spring
 
 The project follows a layered architecture and is being developed feature-by-feature using Git feature branches.
 
+## 🔐 Local secrets configuration
+
+The application requires two environment variables referenced by `ecommerce/src/main/resources/application.properties`:
+
+- `DB_PASSWORD` — password for the configured MySQL account. The existing database URL and username are unchanged.
+- `JWT_SECRET` — the HMAC signing key used by `JwtUtil`. Use a private value of at least 32 bytes. Keep the same signing key if existing JWTs must remain valid.
+
+Set both variables in the environment used to launch Spring Boot (your shell or IDE run configuration). Replace these example placeholders locally; never commit the actual values.
+
+**macOS/Linux**
+```bash
+export DB_PASSWORD='replace-with-your-existing-local-mysql-password'
+export JWT_SECRET='replace-with-your-existing-jwt-signing-key'
+cd ecommerce
+./mvnw spring-boot:run
+```
+
+**Windows PowerShell**
+```powershell
+$env:DB_PASSWORD = 'replace-with-your-existing-local-mysql-password'
+$env:JWT_SECRET = 'replace-with-your-existing-jwt-signing-key'
+Set-Location ecommerce
+.\mvnw.cmd spring-boot:run
+```
+
+When migrating an existing checkout, preserve the current local values in your environment before pulling this change if you need to retain the same database connection and token-validation behavior. The ignored `.env` file is **not** loaded automatically by Spring Boot; set the variables in your shell or IDE. If either variable is missing, the required property cannot be resolved at startup. Do not share actual values in commits, issues, or chat.
+
 ---
 
 ## 🚀 Project Status
