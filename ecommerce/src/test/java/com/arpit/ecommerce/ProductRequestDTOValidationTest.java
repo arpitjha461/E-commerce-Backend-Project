@@ -48,4 +48,20 @@ class ProductRequestDTOValidationTest {
             assertTrue(validator.validate(request).isEmpty());
         }
     }
+
+    @Test
+    void acceptsMinimumPriceAndZeroStock() {
+        ProductRequestDTO request = new ProductRequestDTO();
+        request.setCategoryId(1L);
+        request.setName("Clearance item");
+        request.setDescription("Item with no remaining stock");
+        request.setPrice(new BigDecimal("0.01"));
+        request.setStock(0);
+
+        try (var factory = Validation.buildDefaultValidatorFactory()) {
+            Validator validator = factory.getValidator();
+
+            assertTrue(validator.validate(request).isEmpty());
+        }
+    }
 }
