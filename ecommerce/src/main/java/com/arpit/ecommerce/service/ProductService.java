@@ -11,6 +11,7 @@ import com.arpit.ecommerce.repository.CategoryRepository;
 import com.arpit.ecommerce.repository.InventoryRepository;
 import com.arpit.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class ProductService {
     @Autowired
     private InventoryRepository inventoryRepository;
 
+    @Transactional
     public ProductResponseDTO addProduct(ProductRequestDTO requestDTO){
         Category category = categoryRepository.findById(requestDTO.getCategoryId())
                 .orElseThrow(()-> new CategoryNotFoundException("Category not found with Id :"+ requestDTO.getCategoryId()));
