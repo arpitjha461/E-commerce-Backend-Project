@@ -73,7 +73,7 @@ public class ProductService {
         productRepository.findById(id)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + id));
         productRepository.deleteById(id);
-        return "Product having id: "+id +"deleted successfully";
+        return "Product having id: " + id + " deleted successfully";
     }
     private ProductResponseDTO mapToResponseDTO(Product product){
         ProductResponseDTO dto = new ProductResponseDTO();
