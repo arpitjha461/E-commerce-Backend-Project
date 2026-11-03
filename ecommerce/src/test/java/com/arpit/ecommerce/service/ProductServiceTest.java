@@ -77,4 +77,16 @@ class ProductServiceTest {
         assertEquals(12, createdInventory.getAvailableStock());
         assertEquals(0, createdInventory.getReservedStock());
     }
+
+    @Test
+    void deleteProductReturnsReadableSuccessMessage() {
+        Product product = new Product();
+        product.setId(101L);
+        when(productRepository.findById(101L)).thenReturn(Optional.of(product));
+
+        String response = productService.deleteProduct(101L);
+
+        assertEquals("Product having id: 101 deleted successfully", response);
+        verify(productRepository).deleteById(101L);
+    }
 }
