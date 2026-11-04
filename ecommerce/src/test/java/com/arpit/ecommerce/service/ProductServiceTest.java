@@ -5,6 +5,7 @@ import com.arpit.ecommerce.dto.response.ProductResponseDTO;
 import com.arpit.ecommerce.entity.Category;
 import com.arpit.ecommerce.entity.Inventory;
 import com.arpit.ecommerce.entity.Product;
+import com.arpit.ecommerce.exception.ProductNotFoundException;
 import com.arpit.ecommerce.repository.CategoryRepository;
 import com.arpit.ecommerce.repository.InventoryRepository;
 import com.arpit.ecommerce.repository.ProductRepository;
@@ -20,7 +21,9 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -88,5 +91,15 @@ class ProductServiceTest {
 
         assertEquals("Product having id: 101 deleted successfully", response);
         verify(productRepository).deleteById(101L);
+    }
+
+    @Test
+    void deleteProductThrowsWhenProductDoesNotExist() {
+        when(productRepository.findById(404L)).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class,
+                () -> productService.deleteProduct(404L));
+
+        verify(productRepository, never()).deleteById(404L);
     }
 }
