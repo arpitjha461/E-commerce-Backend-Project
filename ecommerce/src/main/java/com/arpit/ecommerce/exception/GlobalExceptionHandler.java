@@ -170,8 +170,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidReleaseOperationException.class)
-    public ResponseEntity<ApiError> InvalidReleaseOperationException(
-            InsufficientStockException ex){
+    public ResponseEntity<ApiError> handleInvalidReleaseOperationException(
+            InvalidReleaseOperationException ex) {
         ApiError apiError = new ApiError();
         apiError.setTimestamp(LocalDateTime.now());
         apiError.setMessage(ex.getMessage());
