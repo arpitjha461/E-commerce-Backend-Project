@@ -27,6 +27,9 @@ public class InventoryService {
 
     @Transactional
     public String setReserveStock(Long productId, Integer reserveStock){
+        if (reserveStock == null || reserveStock <= 0) {
+            throw new InsufficientStockException("Reservation quantity must be greater than zero");
+        }
         Inventory inventory = inventoryRepository.findByProductIdForUpdate(productId)
                 .orElseThrow(()-> new InventoryNotFoundException("Inventory Not found for product Id: "+productId));
         if (inventory.getAvailableStock()<reserveStock){
@@ -40,6 +43,9 @@ public class InventoryService {
 
     @Transactional
     public void releaseReserveStock(Long productId,Integer quantity){
+        if (quantity == null || quantity <= 0) {
+            throw new InvalidReleaseOperationException("Release quantity must be greater than zero");
+        }
         Inventory inventory = inventoryRepository.findByProductIdForUpdate(productId)
                 .orElseThrow(()-> new InventoryNotFoundException("Inventory not found for product Id: " + productId));
         if (inventory.getReservedStock()<quantity){
@@ -52,6 +58,9 @@ public class InventoryService {
 
     @Transactional
     public void completeSale(Long productId, Integer quantity){
+        if (quantity == null || quantity <= 0) {
+            throw new InvalidSaleOperationException("Sale quantity must be greater than zero");
+        }
         Inventory inventory = inventoryRepository.findByProductIdForUpdate(productId)
                 .orElseThrow(()-> new InventoryNotFoundException("Inventory not found for product Id: " + productId));
 
