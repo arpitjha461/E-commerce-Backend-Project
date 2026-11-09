@@ -31,7 +31,7 @@ public class ProductService {
     @Transactional
     public ProductResponseDTO addProduct(ProductRequestDTO requestDTO){
         Category category = categoryRepository.findById(requestDTO.getCategoryId())
-                .orElseThrow(()-> new CategoryNotFoundException("Category not found with Id :"+ requestDTO.getCategoryId()));
+                .orElseThrow(()-> new CategoryNotFoundException("Category not found with Id :" + requestDTO.getCategoryId()));
         Product product = mapToEntity(requestDTO);
         product.setCategory(category);
         product = productRepository.save(product);
@@ -53,6 +53,24 @@ public class ProductService {
         }
         return  responseDTOList;
     }
+
+    public List<ProductResponseDTO> searchProducts(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return new ArrayList<>();
+        }
+
+        String searchTerm = keyword.trim();
+        List<Product> products =
+                productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                        searchTerm, searchTerm);
+        List<ProductResponseDTO> responseDTOList = new ArrayList<>();
+
+        for (Product product : products) {
+            responseDTOList.add(mapToResponseDTO(product));
+        }
+        return responseDTOList;
+    }
+
     public ProductResponseDTO getProductById(Long id){
         Product product = productRepository.findById(id)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + id));
@@ -63,7 +81,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + id));
         Category category =categoryRepository.findById(requestDTO.getCategoryId())
-                        .orElseThrow(()-> new CategoryNotFoundException("Category not found with id: "+ requestDTO.getCategoryId()));
+                        .orElseThrow(()-> new CategoryNotFoundException("Category not found with id: " + requestDTO.getCategoryId()));
         updateProductFromDTO(product,requestDTO);
         product.setCategory(category);
         product = productRepository.save(product);

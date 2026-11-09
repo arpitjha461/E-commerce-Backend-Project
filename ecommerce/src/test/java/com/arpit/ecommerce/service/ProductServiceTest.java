@@ -17,12 +17,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -79,6 +81,38 @@ class ProductServiceTest {
         assertEquals(101L, createdInventory.getProduct().getId());
         assertEquals(12, createdInventory.getAvailableStock());
         assertEquals(0, createdInventory.getReservedStock());
+    }
+
+    @Test
+    void searchProductsMatchesNameOrDescriptionIgnoringCase() {
+        Product product = new Product();
+        product.setId(102L);
+        product.setName("Mechanical Keyboard");
+        product.setDescription("RGB switches");
+        product.setPrice(new BigDecimal("49.99"));
+        product.setStock(8);
+
+        when(productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                "KEYBOARD", "KEYBOARD")).thenReturn(List.of(product));
+
+        List<ProductResponseDTO> results = productService.searchProducts("  KEYBOARD ");
+
+        assertEquals(1, results.size());
+        assertEquals(102L, results.get(0).getId());
+        assertEquals("Mechanical Keyboard", results.get(0).getName());
+        assertEquals(new BigDecimal("49.99"), results.get(0).getPrice());
+        assertEquals(8, results.get(0).getStock());
+        verify(productRepository).findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                "KEYBOARD", "KEYBOARD");
+    }
+
+    @Test
+    void searchProductsReturnsEmptyListForBlankKeywordWithoutQueryingRepository() {
+        assertEquals(List.of(), productService.searchProducts("   "));
+
+        verify(productRepository, never())
+                .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                        anyString(), anyString());
     }
 
     @Test

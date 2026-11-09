@@ -24,6 +24,7 @@ public class ProductController {
 
     @Autowired
     private ProductService productService;
+
     @PostMapping
     @Operation(summary = "Add a product",
             description = "Creates a new product")
@@ -36,6 +37,7 @@ public class ProductController {
     public ProductResponseDTO addProduct(@Valid @RequestBody ProductRequestDTO requestDTO){
         return productService.addProduct(requestDTO);
     }
+
     @GetMapping
     @Operation(summary = "Get all products",
             description = "Retrieves the list of products")
@@ -46,6 +48,20 @@ public class ProductController {
     })
     public List<ProductResponseDTO> getAllProducts(){
         return productService.getAllProducts();
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Search products by keyword",
+            description = "Finds products whose name or description contains the keyword, ignoring case. Blank keywords return an empty list.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Matching products retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Insufficient permissions")
+    })
+    public List<ProductResponseDTO> searchProducts(
+            @Parameter(description = "Text to match against product names and descriptions", example = "keyboard")
+            @RequestParam String keyword) {
+        return productService.searchProducts(keyword);
     }
 
     @GetMapping("/{id}")
