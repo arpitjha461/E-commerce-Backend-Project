@@ -46,12 +46,7 @@ public class ProductService {
     }
 
     public List<ProductResponseDTO> getAllProducts(){
-        List<Product> products = productRepository.findAll();
-        List<ProductResponseDTO> responseDTOList = new ArrayList<>();
-        for (Product product :products){
-            responseDTOList.add(mapToResponseDTO(product));
-        }
-        return  responseDTOList;
+        return mapToResponseDTOList(productRepository.findAll());
     }
 
     public List<ProductResponseDTO> searchProducts(String keyword) {
@@ -63,12 +58,7 @@ public class ProductService {
         List<Product> products =
                 productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                         searchTerm, searchTerm);
-        List<ProductResponseDTO> responseDTOList = new ArrayList<>();
-
-        for (Product product : products) {
-            responseDTOList.add(mapToResponseDTO(product));
-        }
-        return responseDTOList;
+        return mapToResponseDTOList(products);
     }
 
     public ProductResponseDTO getProductById(Long id){
@@ -93,6 +83,15 @@ public class ProductService {
         productRepository.deleteById(id);
         return "Product having id: " + id + " deleted successfully";
     }
+
+    private List<ProductResponseDTO> mapToResponseDTOList(List<Product> products) {
+        List<ProductResponseDTO> responseDTOList = new ArrayList<>(products.size());
+        for (Product product : products) {
+            responseDTOList.add(mapToResponseDTO(product));
+        }
+        return responseDTOList;
+    }
+
     private ProductResponseDTO mapToResponseDTO(Product product){
         ProductResponseDTO dto = new ProductResponseDTO();
         dto.setId(product.getId());
