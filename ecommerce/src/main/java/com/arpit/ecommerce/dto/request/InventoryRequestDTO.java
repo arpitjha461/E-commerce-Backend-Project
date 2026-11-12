@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 public class InventoryRequestDTO {
 
-//    @NotNull(message = "Available stock is required")
-//    @Min(value = 0,message = "Available Stock cannot be negative")
+    @NotNull(message = "Available stock is required")
+    @Min(value = 0, message = "Available stock cannot be negative")
     private Integer availableStock;
 
     public Integer getAvailableStock() {
