@@ -1,1247 +1,421 @@
-# 🛒 E-Commerce Backend
+# E-Commerce Backend
 
-A RESTful e-commerce backend application built using **Java, Spring Boot, Spring Security, JWT, Spring Data JPA, and MySQL**.
+A RESTful e-commerce backend built with **Java 17, Spring Boot, Spring Security, JWT, Spring Data JPA, MySQL, and MongoDB**. The application exposes APIs for user management, product and category management, shopping carts, orders, payments, and inventory.
 
-The project follows a layered architecture and is being developed feature-by-feature using Git feature branches.
+> This repository contains the backend application only. It does not include a frontend storefront.
 
----
+## Table of contents
 
-## 🚀 Project Status
+- [Overview](#overview)
+- [Features](#features)
+- [Technology stack](#technology-stack)
+- [Architecture](#architecture)
+- [Project structure](#project-structure)
+- [Prerequisites](#prerequisites)
+- [Getting started](#getting-started)
+- [Configuration](#configuration)
+- [Running the application](#running-the-application)
+- [Authentication and authorization](#authentication-and-authorization)
+- [API reference](#api-reference)
+- [Business workflows](#business-workflows)
+- [Error handling and validation](#error-handling-and-validation)
+- [Testing](#testing)
+- [Git workflow](#git-workflow)
+- [Known implementation notes](#known-implementation-notes)
+- [Roadmap](#roadmap)
+- [Author](#author)
 
-| Module                   | Status         |
-| ------------------------ | -------------- |
-| User Management          | ✅ Completed    |
-| Authentication & JWT     | ✅ Completed    |
-| Role-Based Authorization | ✅ Completed    |
-| Category Management      | ✅ Completed    |
-| Product Management       | ✅ Completed    |
-| Cart Management          | ✅ Completed    |
-| Order Module             | ✅ Completed    |
-| Payment Module           | ✅ Completed    |
-| Inventory Management     | ✅ Completed    |
-| MongoDB Integration      | ✅ Completed    |
-| Swagger/OpenAPI          | ⏳ Completed  |
-| Unit Testing             | ⏳ Planned      |
-| Docker                   | ⏳ Planned      |
-| CI/CD                    | ⏳ Planned      |
-| AWS Deployment           | ⏳ Planned      |
+## Overview
 
----
+The project demonstrates the design and implementation of a layered Spring Boot application. It separates HTTP endpoints, business logic, persistence, DTOs, domain entities, security, and exception handling.
 
-# 🏗️ Architecture
+The application uses:
+- **MySQL** with Spring Data JPA / Hibernate for relational application data.
+- **MongoDB** through the Spring Data MongoDB dependency; the configured database is `ecommerce_logs`.
+- **JWT** for stateless request authentication.
+- **BCrypt** for password hashing.
+- **Maven** for dependency and build management.
 
-The application follows a layered Spring Boot architecture:
+## Features
 
-```text
-Controller
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Database
-```
+| Area | Capabilities |
+|---|---|
+| Users | Registration, login, user lookup, update, and administrator-controlled listing/deletion |
+| Authentication | JWT generation and request authentication; stateless Spring Security configuration |
+| Authorization | Role-based access for administrator operations |
+| Products | Create, list, retrieve, update, and delete products |
+| Categories | Create, list, retrieve, update, and delete categories |
+| Cart | Add products, retrieve a cart, change item quantity, remove an item |
+| Orders | Place an order from the authenticated user's cart, view orders, cancel an order, update order status |
+| Payments | Create a payment record for an order and complete the simulated payment workflow |
+| Inventory | Set available stock, reserve stock, retrieve inventory, and integrate stock handling with order/payment operations |
+| API errors | Centralized exception handling and validation responses |
 
-Additional layers:
+## Technology stack
 
-```text
-DTO
-Exception Handling
-Security
-Entity
-Validation
-```
+| Technology | Use |
+|---|---|
+| Java 17 | Application language |
+| Spring Boot 3.5.15 | Application framework |
+| Spring Web | REST controllers |
+| Spring Data JPA and Hibernate | Relational persistence / ORM |
+| MySQL | Primary relational database |
+| Spring Data MongoDB | MongoDB connectivity |
+| Spring Security | Authentication and authorization |
+| JSON Web Token (JJWT 0.12.5) | Token handling |
+| BCrypt | Password hashing |
+| Jakarta Validation | Request validation |
+| Maven | Build and dependency management |
+| Lombok | Boilerplate reduction |
+| JUnit / Spring Boot Test | Test dependencies |
+| Spring Security Test | Security testing support |
+| Postman | Manual API verification |
 
----
+## Architecture
 
-# 🛠️ Technologies Used
-
-* Java
-* Spring Boot
-* Spring Web
-* Spring Data JPA
-* Spring Security
-* JWT Authentication
-* Hibernate
-* MySQL
-* Jakarta Validation
-* Maven
-* Git & GitHub
-* Postman
-
-### Planned Technologies
-
-* MongoDB
-* Docker
-* Swagger / OpenAPI
-* JUnit
-* Mockito
-* GitHub Actions
-* AWS
-
----
-
-# 📂 Project Structure
+The application follows a layered architecture:
 
 ```text
-ecommerce/
-├── src/
-│   ├── main/
-│   │   ├── java/
-│   │   │   └── com/
-│   │   │       └── arpit/
-│   │   │           └── ecommerce/
-│   │   │               ├── EcommerceApplication.java
-│   │   │               ├── config/
-│   │   │               │   └── SecurityConfig.java
-│   │   │               ├── controller/
-│   │   │               │   ├── CartController.java
-│   │   │               │   ├── CategoryController.java
-│   │   │               │   ├── OrderController.java
-│   │   │               │   ├── PaymentController.java
-│   │   │               │   ├── ProductController.java
-│   │   │               │   └── UserController.java
-│   │   │               ├── dto/
-│   │   │               │   ├── request/
-│   │   │               │   │   ├── AddToCartRequestDTO.java
-│   │   │               │   │   ├── CategoryRequestDTO.java
-│   │   │               │   │   ├── LoginRequestDTO.java
-│   │   │               │   │   ├── PaymentRequestDTO.java
-│   │   │               │   │   ├── ProductRequestDTO.java
-│   │   │               │   │   ├── UpdateCartQuantityRequestDTO.java
-│   │   │               │   │   └── UserRequestDTO.java
-│   │   │               │   └── response/
-│   │   │               │       ├── CartItemResponseDTO.java
-│   │   │               │       ├── CartResponseDTO.java
-│   │   │               │       ├── CategoryResponseDTO.java
-│   │   │               │       ├── LoginResponseDTO.java
-│   │   │               │       ├── ProductResponseDTO.java
-│   │   │               │       └── UserResponseDTO.java
-│   │   │               ├── entity/
-│   │   │               │   ├── Cart.java
-│   │   │               │   ├── CartItem.java
-│   │   │               │   ├── Category.java
-│   │   │               │   ├── Order.java
-│   │   │               │   ├── OrderItem.java
-│   │   │               │   ├── Payment.java
-│   │   │               │   ├── Product.java
-│   │   │               │   └── User.java
-│   │   │               ├── enums/
-│   │   │               │   ├── OrderStatus.java
-│   │   │               │   ├── PaymentMethod.java
-│   │   │               │   └── PaymentStatus.java
-│   │   │               ├── exception/
-│   │   │               │   ├── CartItemNotFoundException.java
-│   │   │               │   ├── CategoryNotFoundException.java
-│   │   │               │   ├── GlobalExceptionHandler.java
-│   │   │               │   ├── InvalidCredentialsException.java
-│   │   │               │   ├── InvalidOrderStatusException.java
-│   │   │               │   ├── InvalidStatusForPaymentException.java
-│   │   │               │   ├── OrderNotFoundException.java
-│   │   │               │   ├── PaymentAlreadyExistsException.java
-│   │   │               │   ├── PaymentNotFoundException.java
-│   │   │               │   ├── ProductNotFoundException.java
-│   │   │               │   ├── UnauthorizedPaymentException.java
-│   │   │               │   └── UserNotFoundException.java
-│   │   │               ├── payload/
-│   │   │               │   └── ApiError.java
-│   │   │               ├── repository/
-│   │   │               │   ├── CartItemRepository.java
-│   │   │               │   ├── CartRepository.java
-│   │   │               │   ├── CategoryRepository.java
-│   │   │               │   ├── OrderItemRepository.java
-│   │   │               │   ├── OrderRepository.java
-│   │   │               │   ├── PaymentRepository.java
-│   │   │               │   ├── ProductRepository.java
-│   │   │               │   └── UserRepository.java
-│   │   │               ├── security/
-│   │   │               │   └── JwtAuthenticationFilter.java
-│   │   │               ├── service/
-│   │   │               │   ├── CartService.java
-│   │   │               │   ├── CategoryService.java
-│   │   │               │   ├── CustomUserDetailsService.java
-│   │   │               │   ├── OrderService.java
-│   │   │               │   ├── PaymentService.java
-│   │   │               │   ├── ProductService.java
-│   │   │               │   └── UserService.java
-│   │   │               └── util/
-│   │   │                   └── JwtUtil.java
-│   │   └── resources/
-│   │       ├── application.properties
-│   │       ├── static/
-│   │       └── templates/
-│   └── test/
-│       └── java/
-│           └── com/
-│               └── arpit/
-│                   └── ecommerce/
-│                       ├── EcommerceApplicationTests.java
-│                       └── config/
-│                           └── SecurityConfigTest.java
-├── pom.xml
-├── mvnw
-└── mvnw.cmd
+HTTP Client (Postman / API consumer)
+              |
+              v
+       REST Controllers
+              |
+              v
+          Services
+       (business rules)
+              |
+              v
+        Repositories
+              |
+       +------+------+
+       |             |
+       v             v
+     MySQL         MongoDB
+ (JPA / Hibernate) (Spring Data)
 ```
 
----
+Cross-cutting components include:
 
-# 🔐 Authentication & Security
+- **DTOs:** request and response models keep API contracts separate from persistence entities.
+- **Security:** Spring Security configuration, JWT filter, user-details service, and JWT utility.
+- **Validation:** Jakarta Validation annotations on incoming request DTOs.
+- **Exception handling:** domain exceptions and a centralized global exception handler.
+- **Transactions:** service-level transaction boundaries for operations that must succeed or roll back together.
 
-The application uses **JWT-based authentication** with Spring Security.
+## Project structure
 
-### Authentication Flow
+The repository root contains the Spring Boot project in the `ecommerce/` directory.
 
 ```text
-User Login
-    ↓
-Validate Credentials
-    ↓
-Generate JWT
-    ↓
-Client Stores Token
-    ↓
-Client Sends:
-Authorization: Bearer <token>
-    ↓
-JwtAuthenticationFilter
-    ↓
-Validate JWT
-    ↓
-Authenticate User
-    ↓
-Access Protected API
+E-commerce-Backend-Project/
+├── README.md
+└── ecommerce/
+    ├── pom.xml
+    ├── mvnw
+    ├── mvnw.cmd
+    └── src/
+        ├── main/
+        │   ├── java/com/arpit/ecommerce/
+        │   │   ├── EcommerceApplication.java
+        │   │   ├── config/
+        │   │   │   └── SecurityConfig.java
+        │   │   ├── controller/
+        │   │   │   ├── CartController.java
+        │   │   │   ├── CategoryController.java
+        │   │   │   ├── InventoryController.java
+        │   │   │   ├── OrderController.java
+        │   │   │   ├── PaymentController.java
+        │   │   │   ├── ProductController.java
+        │   │   │   └── UserController.java
+        │   │   ├── dto/
+        │   │   │   ├── request/
+        │   │   │   └── response/
+        │   │   ├── entity/
+        │   │   ├── enums/
+        │   │   ├── exception/
+        │   │   ├── payload/
+        │   │   ├── repository/
+        │   │   ├── security/
+        │   │   │   └── JwtAuthenticationFilter.java
+        │   │   ├── service/
+        │   │   └── util/
+        │   └── resources/
+        │       └── application.properties
+        └── test/
+            └── java/com/arpit/ecommerce/
+                ├── EcommerceApplicationTests.java
+                └── config/
+                    └── SecurityConfigTest.java
 ```
 
-Public APIs currently include:
+## Prerequisites
+
+Install the following before running the application:
+
+1. **JDK 17**.
+2. **MySQL Server**.
+3. **MongoDB** (only required for features that use the MongoDB integration).
+4. Git.
+5. An IDE such as IntelliJ IDEA or a terminal.
+
+Maven Wrapper scripts are included, so a separate Maven installation is not required.
+
+## Getting started
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/arpitjha461/E-commerce-Backend-Project.git
+cd E-commerce-Backend-Project
+```
+
+### 2. Open the Spring Boot project
+
+The Maven project is inside the `ecommerce/` directory:
+
+```bash
+cd ecommerce
+```
+
+### 3. Create the MySQL database
+
+Connect to your MySQL server and run:
+
+```sql
+CREATE DATABASE ecommerce_db;
+```
+
+Create or select a MySQL user with permission to access this database. Configure the username and password using the environment variables described below.
+
+### 4. Start MongoDB
+
+Start a local MongoDB instance if you intend to use the configured MongoDB integration. The default local database name in the configuration is `ecommerce_logs`.
+
+### 5. Configure the application
+
+Set the database credentials and JWT secret using environment variables. See [Configuration](#configuration).
+
+### 6. Build and run
+
+Windows:
+
+```powershell
+.\mvnw.cmd clean package
+.\mvnw.cmd spring-boot:run
+```
+
+macOS / Linux:
+
+```bash
+chmod +x ./mvnw
+./mvnw clean package
+./mvnw spring-boot:run
+```
+
+When startup succeeds, the API is available at:
 
 ```text
-POST /users/register
-POST /users/login
+http://localhost:8765
 ```
 
-Protected APIs require authentication.
+## Configuration
 
-Role-based authorization is also implemented for administrative operations.
+Application configuration is currently held in `ecommerce/src/main/resources/application.properties`.
 
----
+The application uses these settings:
 
-# 👤 User Module
+| Property | Purpose | Local default |
+|---|---|---|
+| `server.port` | HTTP port | `8765` |
+| `spring.datasource.url` | MySQL JDBC URL | `jdbc:mysql://localhost:3306/ecommerce_db` |
+| `spring.datasource.username` | MySQL username | Set locally |
+| `spring.datasource.password` | MySQL password | Set locally |
+| `spring.jpa.hibernate.ddl-auto` | Hibernate schema behavior | `update` |
+| `jwt.secret` | JWT signing secret | Must be supplied securely |
+| `jwt.expiration` | Token lifetime in milliseconds | `3000000` (50 minutes) |
+| `spring.data.mongodb.uri` | MongoDB connection URI | `mongodb://localhost:27017/ecommerce_logs` |
 
-The User module provides:
+**Security note:** Never commit database passwords, JWT signing secrets, API keys, or other credentials. Keep real values outside source control. The repository's checked-in configuration should use placeholders or environment-variable references, and any credential that has already been committed should be rotated.
 
-* User registration
-* User login
-* Password encryption using BCrypt
-* JWT authentication
-* Role-based authorization
-* User lookup
-* User deletion for authorized administrators
-
----
-
-# 📦 Product Module
-
-The Product module provides product management functionality.
-
-Main operations include:
+For example, configure the following environment variables in your shell or IDE run configuration:
 
 ```text
-Create Product
-Get Product
-Get Products
-Update Product
-Delete Product
+DB_URL=jdbc:mysql://localhost:3306/ecommerce_db
+DB_USERNAME=your_mysql_username
+DB_PASSWORD=your_mysql_password
+JWT_SECRET=replace_with_a_long_random_secret
+MONGODB_URI=mongodb://localhost:27017/ecommerce_logs
 ```
 
-Products are associated with categories.
+The application must be configured to read these variables (for example, with Spring Boot property placeholders) before relying on them. Do not assume that defining shell variables alone overrides hard-coded values.
 
----
+## Running the application
 
-# 🗂️ Category Module
+From the `ecommerce/` directory:
 
-Category management supports:
+```bash
+# Run tests
+./mvnw test
+
+# Build the application
+./mvnw clean package
+
+# Start the application
+./mvnw spring-boot:run
+```
+
+On Windows, use `mvnw.cmd` instead of `./mvnw`.
+
+The configured application port is **8765**. Example base URL:
 
 ```text
-Create Category
-Get Categories
-Update Category
-Delete Category
+http://localhost:8765
 ```
 
-Administrative operations are protected using Spring Security roles.
+## Authentication and authorization
 
----
+The application uses stateless JWT authentication.
 
-# 🛒 Cart Module
+### Authentication flow
 
-The Cart module is **completed**.
+```text
+Register / Login
+      |
+      v
+Validate credentials
+      |
+      v
+Create JWT
+      |
+      v
+Client receives token
+      |
+      v
+Client sends Authorization header
+      |
+      v
+JwtAuthenticationFilter validates token
+      |
+      v
+Spring Security authorizes request
+      |
+      v
+Controller handles request
+```
 
-### Features
-
-* Add product to cart
-* Get user's cart
-* Update cart quantity
-* Remove individual cart item
-* Clear entire cart
-* Validation
-* Cart-item exception handling
-
-### Add Product
+For protected endpoints, include:
 
 ```http
-POST /cart/add
-```
-
-Example request:
-
-```json
-{
-  "userId": 26,
-  "productId": 6,
-  "quantity": 2
-}
-```
-
-### Get Cart
-
-```http
-GET /cart/{userId}
-```
-
-### Update Cart Quantity
-
-```http
-PUT /cart/item/{cartItemId}
-```
-
-Example:
-
-```json
-{
-  "quantity": 3
-}
-```
-
-If quantity is `0`, the cart item is removed.
-
-### Remove Cart Item
-
-```http
-DELETE /cart/items/{cartItemId}
-```
-
-### Clear Cart
-
-```http
-DELETE /cart/{userId}/items
-```
-
-The cart itself is preserved; its `CartItem` records are removed.
-
----
-
-# 📦 Order Module
-
-The Order module is **completed**.
-
-### Current Design
-
-```text
-User
-  │
-  │ 1
-  ▼
-Order
-  │
-  │ 1:N
-  ▼
-OrderItem
-  │
-  │ N:1
-  ▼
-Product
-```
-
-### Order Status
-
-The project uses the following order lifecycle:
-
-```text
-PENDING
-    ↓
-CONFIRMED
-    ↓
-SHIPPED
-    ↓
-OUT_FOR_DELIVERY
-    ↓
-DELIVERED
-```
-
-Other possible states:
-
-```text
-CANCELLED
-RETURNED
-REFUNDED
-```
-
-### Order Entity
-
-An order contains:
-
-```text
-id
-user
-orderItems
-totalAmount
-status
-createdAt
-updatedAt
-```
-
-### OrderItem Entity
-
-An order item contains:
-
-```text
-id
-order
-product
-quantity
-price
-```
-
-`OrderItem.price` stores the **historical purchase price** used when the order was created, rather than relying on the product's current price.
-
-### Order Relationships
-
-```text
-Order
- ├── OrderItem
- ├── OrderItem
- └── OrderItem
-```
-
-Therefore:
-
-```java
-Order → OrderItem
-@OneToMany
-```
-
-and:
-
-```java
-OrderItem → Order
-@ManyToOne
-```
-
-Similarly, multiple order items can reference the same product:
-
-```java
-OrderItem → Product
-@ManyToOne
-```
-
----
-
-# 🔌 Order APIs
-
-Implemented order APIs:
-
-```text
-POST /orders/place
-GET /orders/my-orders
-GET /orders/{orderId}
-PUT /orders/{orderId}/cancel
-PUT /orders/{orderId}/status
-```
-
-The order status update API is restricted to administrators.
-
----
-
-# 💳 Payment Module
-
-The Payment module is **completed**.
-
-### Current Design
-
-```text
-Order 1 ───── 1 Payment
-```
-
-Payment stores:
-
-```text
-id
-order
-amount
-paymentMethod
-status
-transactionId
-createdAt
-updatedAt
-```
-
-`order_id` is non-null and unique, ensuring one payment record per order.
-
-### Payment Status
-
-```text
-PENDING
-SUCCESS
-FAILED
-```
-
-### Payment Methods
-
-```text
-UPI
-CARD
-NET_BANKING
-COD
-```
-
-### Payment APIs
-
-```text
-POST /payments/{orderId}
-PUT /payments/{paymentId}/complete
-```
-
-The client provides only the payment method when creating a payment.
-
-The server controls:
-
-```text
-amount
-status
-transactionId
-```
-
-The payment amount is taken from:
-
-```text
-Order.totalAmount
-```
-
-### Payment Creation Flow
-
-```text
-Authenticated User
-        ↓
-Find User
-        ↓
-Find Order
-        ↓
-Verify Order belongs to User
-        ↓
-Check Order is PENDING
-        ↓
-Check Payment does not already exist
-        ↓
-Create Payment
-        ↓
-amount = Order.totalAmount
-status = PENDING
-paymentMethod = request.paymentMethod
-transactionId = generated by server
-        ↓
-Save Payment
-        ↓
-Return Payment Response
-```
-
-### Payment Completion Flow
-
-```text
-Admin
-  ↓
-Find Payment
-  ↓
-Check Payment = PENDING
-  ↓
-Check Order = PENDING
-  ↓
-Complete Sale for each OrderItem
-  ↓
-Payment → SUCCESS
-  ↓
-Order → CONFIRMED
-```
-
-`completePayment()` is transactional so inventory finalization, payment status, and order status participate in the same transaction.
-
-The current payment flow is simulated; real payment gateway integration can be added later.
-
-### Payment Entity Design
-
-```java
-@Entity
-@Table(name = "payments")
-public class Payment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @OneToOne
-    @JoinColumn(name = "order_id", nullable = false, unique = true)
-    private Order order;
-
-    private BigDecimal amount;
-
-    @Enumerated(EnumType.STRING)
-    private PaymentMethod paymentMethod;
-
-    @Enumerated(EnumType.STRING)
-    private PaymentStatus status;
-
-    private String transactionId;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-}
-```
-
-### Payment DTOs
-
-`PaymentRequestDTO` accepts only the payment method:
-
-```json
-{
-  "paymentMethod": "UPI"
-}
-```
-
-The response contains:
-
-```text
-paymentId
-orderId
-amount
-paymentMethod
-paymentStatus
-transactionId
-createdAt
-```
-
-This prevents the client from controlling sensitive payment fields such as amount, status, and transaction ID.
-
-### Payment Repository
-
-The repository provides order-based lookup to enforce one payment per order:
-
-```java
-Optional<Payment> findByOrder(Order order);
-```
-
-### Payment Service Rules
-
-When creating a payment, the service:
-
-1. Gets the authenticated user from the JWT/SecurityContext.
-2. Finds the user and order.
-3. Verifies that the order belongs to the authenticated user.
-4. Allows payment only when the order status is `PENDING`.
-5. Checks that a payment does not already exist.
-6. Creates the payment with the order's `totalAmount`.
-7. Sets status to `PENDING`.
-8. Generates the transaction ID on the server.
-
-When completing a payment:
-
-1. Finds the payment.
-2. Requires payment status to be `PENDING`.
-3. Requires the related order status to be `PENDING`.
-4. Changes payment status to `SUCCESS`.
-5. Changes order status to `CONFIRMED`.
-6. Performs both changes inside one transaction.
-
-```text
-Payment PENDING + Order PENDING
-            ↓
-      Payment SUCCESS
-            ↓
-      Order CONFIRMED
-```
-
-The payment completion operation is currently restricted to `ADMIN` through Spring Security.
-
-### Payment Security
-
-```java
-.requestMatchers(HttpMethod.PUT, "/payments/*/complete")
-    .hasRole("ADMIN")
-```
-
-Payment creation requires an authenticated user, while payment completion is an administrative operation in the current simulated implementation.
-
-### Payment Exceptions
-
-The payment module uses dedicated domain exceptions:
-
-```text
-PaymentNotFoundException
-PaymentAlreadyExistsException
-UnauthorizedPaymentException
-InvalidStatusForPaymentException
-```
-
-They are handled centrally by `GlobalExceptionHandler` with appropriate HTTP responses such as `404`, `403`, `409`, and `400`.
-
-### Payment Validation & Testing
-
-The payment workflow has been tested for:
-
-* Successful payment completion → `200 OK`
-* Non-admin attempting payment completion → `403 Forbidden`
-* Completing an already successful payment → `400 Bad Request`
-* Duplicate payment creation → `409 Conflict`
-* Unauthorized user attempting to pay another user's order → `403 Forbidden`
-* Payment for a non-`PENDING` order → `400 Bad Request`
-
-### Payment Business Rules
-
-```text
-One Order → One Payment
-
-Client controls:
-    paymentMethod
-
-Server controls:
-    amount
-    payment status
-    transactionId
-    order status transition
-```
-
-The payment amount is always copied from `Order.totalAmount`, preventing the client from submitting an arbitrary payment amount.
-
-### Git Milestone
-
-Payment development was completed on the `feature/payment` branch.
-
-```text
-8c9e567  complete payment module
-```
-
-
----
-
-## 💳 Payment APIs
-
-### 17. Create Payment
-
-```http
-POST /payments/{orderId}
-```
-
-**Authorization:** Authenticated USER/ADMIN
-
-**Request Body:**
-
-```json
-{
-  "paymentMethod": "UPI"
-}
-```
-
-The server derives the amount from the order and creates the payment with `PENDING` status.
-
-### 18. Complete Payment
-
-```http
-PUT /payments/{paymentId}/complete
-```
-
-**Authorization:** `ADMIN`
-
-**Request Body:** None
-
-Successful completion changes:
-
-```text
-Payment: PENDING → SUCCESS
-Order:   PENDING → CONFIRMED
-```
-
----
-
-# 📦 Inventory Management
-
-Inventory management is the **current development focus**.
-
-## Inventory Design
-
-Inventory is maintained separately from Product:
-
-```text
-Product
-   │
-   │ 1 : 1
-   ▼
-Inventory
-   ├── availableStock
-   └── reservedStock
-```
-
-This separates product information from stock-management logic.
-
-### Inventory Entity
-
-```text
-inventory
----------
-id
-product_id       ← FK + UNIQUE
-available_stock
-reserved_stock
-```
-
-A new Product automatically gets an Inventory record with:
-
-```text
-availableStock = 0
-reservedStock  = 0
-```
-
-### Inventory APIs
-
-```text
-PUT  /inventory/{productId}
-PUT  /inventory/{productId}/reserve
-GET  /inventory/{productId}
-```
-
-### Stock Reservation
-
-Example:
-
-```text
-Before reservation:
-
-availableStock = 10
-reservedStock  = 0
-```
-
-Customer orders 3 units:
-
-```text
-availableStock = 7
-reservedStock  = 3
-```
-
-The reserved units are temporarily unavailable to other customers.
-
-### Successful Payment
-
-When payment succeeds:
-
-```text
-availableStock = 7
-reservedStock  = 0
-```
-
-`availableStock` is not reduced again because it was already reduced during reservation. The reserved units are finalized as sold.
-
-### Order Cancellation / Release
-
-If a pending order is cancelled:
-
-```text
-availableStock = 7
-reservedStock  = 3
-
-        ↓ release 3
-
-availableStock = 10
-reservedStock  = 0
-```
-
-### Inventory Flow
-
-```text
-Place Order
-     ↓
-Reserve Stock
-     ↓
-Payment PENDING
-     ↓
-Payment SUCCESS
-     ↓
-Reserved Stock → Sold
-     ↓
-Order CONFIRMED
-```
-
-If a pending order is cancelled:
-
-```text
-Reserved Stock
-      ↓
-Release Reservation
-      ↓
-Available Stock
-```
-
-### Inventory Service Operations
-
-```text
-setAvailableStock()
-setReserveStock()
-releaseReserveStock()
-completeSale()
-getInventory()
-```
-
-Reservation, release, and sale finalization use `@Transactional` and a pessimistic write lock to protect inventory updates.
-
-### Inventory Exceptions
-
-```text
-InventoryNotFoundException
-InsufficientStockException
-InvalidReleaseOperationException
-InvalidSaleOperationException
-```
-
-Examples:
-
-```text
-Requested stock > available stock
-Release quantity > reserved stock
-Sale quantity > reserved stock
-```
-
-### Concurrent Orders
-
-Example:
-
-```text
-Stock = 5
-
-User A → requests 4
-User B → requests 4
-```
-
-The inventory repository uses a pessimistic database row lock:
-
-```java
-@Lock(LockModeType.PESSIMISTIC_WRITE)
-```
-
-to prevent incorrect concurrent stock updates.
-
-### Inventory + Order Transaction
-
-Order placement reserves stock inside the order transaction. If a later item fails because of insufficient stock, earlier reservations are rolled back.
-
-### Inventory + Payment Transaction
-
-Payment completion finalizes every order item's reservation before confirming the order:
-
-```text
-Payment PENDING
-      ↓
-Complete Sale for OrderItem 1
-      ↓
-Complete Sale for OrderItem 2
-      ↓
-...
-      ↓
-Payment SUCCESS
-      ↓
-Order CONFIRMED
-```
-
-If any `completeSale()` operation fails, the transaction rolls back the earlier inventory changes and payment/order status changes.
-
-### Inventory Testing
-
-Tested manually using Postman and MySQL:
-
-```text
-✓ Product creation automatically creates Inventory
-✓ Initial availableStock = 0
-✓ Admin stock update
-✓ Stock reservation during order placement
-✓ availableStock decreases during reservation
-✓ reservedStock increases during reservation
-✓ Payment completion
-✓ reservedStock decreases after successful payment
-✓ availableStock remains unchanged after sale completion
-✓ Payment PENDING → SUCCESS
-✓ Order PENDING → CONFIRMED
-✓ Duplicate payment completion returns 400
-✓ Insufficient stock returns 400
-✓ Order transaction rollback on insufficient stock
-```
-
-Multi-product payment rollback is the remaining transaction-integrity test.
-
-# 🔌 API Reference
-
-All protected APIs require:
-
-```http
-Authorization: Bearer <JWT_TOKEN>
+Authorization: Bearer <your_jwt_token>
 Content-Type: application/json
 ```
 
----
+### Public endpoints
 
-## 🔐 Authentication APIs
+- `POST /users/register`
+- `POST /users/login`
 
-### 1. Register User
+### Role-based rules
 
-```http
-POST /users/register
+The current security configuration explicitly restricts several operations:
+
+| Operation | Required role |
+|---|---|
+| List all users | `ADMIN` |
+| Delete users | `ADMIN` |
+| Read categories | `USER` or `ADMIN` |
+| Create, update, or delete categories | `ADMIN` |
+| Update order status | `ADMIN` |
+| Complete a payment | `ADMIN` |
+| Update or reserve inventory using PUT endpoints | `ADMIN` |
+| Other non-public endpoints | Authenticated user, subject to service-level ownership checks |
+
+Product write operations and some other operations require authentication under the current catch-all security rule. Review controller and service logic for resource ownership and business restrictions before exposing the API publicly.
+
+## API reference
+
+Base URL:
+
+```text
+http://localhost:8765
 ```
 
-**Request Body:**
+All endpoints below are relative to the base URL. Protected endpoints require a valid bearer token. Request DTO validation may impose additional field constraints.
+
+### Users and authentication
+
+| Method | Endpoint | Purpose | Access |
+|---|---|---|---|
+| POST | `/users/register` | Register a user | Public |
+| POST | `/users/login` | Authenticate and receive JWT | Public |
+| GET | `/users` | List users | ADMIN |
+| GET | `/users/{id}` | Retrieve user by ID | Authenticated |
+| PUT | `/users/{id}` | Update user | Authenticated |
+| DELETE | `/users/{id}` | Delete user | ADMIN |
+
+Example registration request (adjust fields to match `UserRequestDTO`):
 
 ```json
 {
-  "name": "Arpit",
-  "email": "arpit@example.com",
-  "password": "Password@123",
+  "name": "Example User",
+  "email": "user@example.com",
+  "password": "ChangeMe@123",
   "role": "USER"
 }
 ```
 
-### 2. Login
-
-```http
-POST /users/login
-```
-
-**Request Body:**
+Example login request:
 
 ```json
 {
-  "email": "arpit@example.com",
-  "password": "Password@123"
+  "email": "user@example.com",
+  "password": "ChangeMe@123"
 }
 ```
 
-The response returns a JWT token which is used for protected APIs.
+Use the token returned by login in the Authorization header for protected requests. Do not use real personal credentials in examples or source control.
 
----
+### Products
 
-## 👤 User APIs
+| Method | Endpoint | Purpose | Access |
+|---|---|---|---|
+| POST | `/products` | Create product | Authenticated |
+| GET | `/products` | List products | Authenticated |
+| GET | `/products/{id}` | Retrieve product | Authenticated |
+| PUT | `/products/{id}` | Update product | Authenticated |
+| DELETE | `/products/{id}` | Delete product | Authenticated |
 
-### 3. Get All Users
+### Categories
 
-```http
-GET /users
-```
+| Method | Endpoint | Purpose | Access |
+|---|---|---|---|
+| POST | `/categories` | Create category | ADMIN |
+| GET | `/categories` | List categories | USER / ADMIN |
+| GET | `/categories/{id}` | Retrieve category | USER / ADMIN |
+| PUT | `/categories/{id}` | Update category | ADMIN |
+| DELETE | `/categories/{id}` | Delete category | ADMIN |
 
-**Authorization:** `ADMIN`
+### Cart
 
-**Request Body:** None
+| Method | Endpoint | Purpose | Access |
+|---|---|---|---|
+| POST | `/cart/add` | Add a product to a cart | Authenticated |
+| GET | `/cart/{userid}` | Retrieve a user's cart | Authenticated |
+| PUT | `/cart/items/{cartItemId}` | Update cart item quantity | Authenticated |
+| DELETE | `/cart/items/{cartItemId}` | Remove a cart item | Authenticated |
 
-### 4. Get User by ID
-
-```http
-GET /users/{userId}
-```
-
-**Request Body:** None
-
-### 5. Update User
-
-```http
-PUT /users/{userId}
-```
-
-**Request Body:**
-
-```json
-{
-  "name": "Updated Name",
-  "email": "updated@example.com",
-  "password": "NewPassword@123"
-}
-```
-
-### 6. Delete User
-
-```http
-DELETE /users/{userId}
-```
-
-**Authorization:** `ADMIN`
-
-**Request Body:** None
-
----
-
-## 📦 Product APIs
-
-### 7. Create Product
-
-```http
-POST /products
-```
-
-**Request Body:**
+Example add-to-cart request (field names follow `AddToCartRequestDTO`):
 
 ```json
 {
-  "name": "Laptop",
-  "description": "Gaming Laptop",
-  "price": 75000,
-  "stock": 10,
-  "categoryId": 1
-}
-```
-
-### 8. Get All Products
-
-```http
-GET /products
-```
-
-**Request Body:** None
-
-### 9. Get Product by ID
-
-```http
-GET /products/{productId}
-```
-
-**Request Body:** None
-
-### 10. Update Product
-
-```http
-PUT /products/{productId}
-```
-
-**Request Body:**
-
-```json
-{
-  "name": "Updated Laptop",
-  "description": "Updated description",
-  "price": 72000,
-  "stock": 15,
-  "categoryId": 1
-}
-```
-
-### 11. Delete Product
-
-```http
-DELETE /products/{productId}
-```
-
-**Request Body:** None
-
----
-
-## 🗂️ Category APIs
-
-### 12. Create Category
-
-```http
-POST /categories
-```
-
-**Authorization:** `ADMIN`
-
-**Request Body:**
-
-```json
-{
-  "name": "Electronics",
-  "description": "Electronic products"
-}
-```
-
-### 13. Get All Categories
-
-```http
-GET /categories
-```
-
-**Request Body:** None
-
-### 14. Get Category by ID
-
-```http
-GET /categories/{categoryId}
-```
-
-**Request Body:** None
-
-### 15. Update Category
-
-```http
-PUT /categories/{categoryId}
-```
-
-**Authorization:** `ADMIN`
-
-**Request Body:**
-
-```json
-{
-  "name": "Updated Electronics",
-  "description": "Updated category description"
-}
-```
-
-### 16. Delete Category
-
-```http
-DELETE /categories/{categoryId}
-```
-
-**Authorization:** `ADMIN`
-
-**Request Body:** None
-
----
-
-## 🛒 Cart APIs
-
-### 17. Add Product to Cart
-
-```http
-POST /cart/add
-```
-
-**Request Body:**
-
-```json
-{
-  "userId": 26,
-  "productId": 6,
+  "userId": 1,
+  "productId": 1,
   "quantity": 2
 }
 ```
 
-### 18. Get Cart
-
-```http
-GET /cart/{userId}
-```
-
-**Request Body:** None
-
-### 19. Update Cart Quantity
-
-```http
-PUT /cart/item/{cartItemId}
-```
-
-**Request Body:**
+Example quantity update:
 
 ```json
 {
@@ -1249,581 +423,235 @@ PUT /cart/item/{cartItemId}
 }
 ```
 
-If quantity is `0`, the cart item is removed.
+### Orders
 
-### 20. Remove Cart Item
+| Method | Endpoint | Purpose | Access |
+|---|---|---|---|
+| POST | `/orders/place` | Place an order from the current user's cart | Authenticated |
+| GET | `/orders/my-orders` | List the authenticated user's orders | Authenticated |
+| GET | `/orders/{orderId}` | Retrieve an order (ownership checked by service) | Authenticated |
+| PUT | `/orders/{orderId}/cancel` | Cancel an eligible order | Authenticated |
+| PUT | `/orders/{orderId}/status` | Update order status | ADMIN |
 
-```http
-DELETE /cart/items/{cartItemId}
-```
+Order placement uses the authenticated user's cart; the controller does not accept a request body for this endpoint.
 
-**Request Body:** None
-
-### 21. Clear Cart
-
-```http
-DELETE /cart/{userId}/items
-```
-
-**Request Body:** None
-
----
-
-## 📦 Order APIs
-
-### 22. Place Order
-
-```http
-POST /orders/place
-```
-
-**Request Body:** None
-
-The order is created from the authenticated user's cart.
-
-The server:
-- Creates the order.
-- Creates `OrderItem` records.
-- Calculates `totalAmount`.
-- Saves the order.
-- Clears the cart.
-
-### 23. Get My Orders
-
-```http
-GET /orders/my-orders
-```
-
-**Request Body:** None
-
-### 24. Get Order by ID
-
-```http
-GET /orders/{orderId}
-```
-
-**Request Body:** None
-
-The authenticated user can access only their own order.
-
-### 25. Cancel Order
-
-```http
-PUT /orders/{orderId}/cancel
-```
-
-**Request Body:** None
-
-Cancellation is currently allowed only when the order status is `PENDING`. Inventory reservations will be released when cancellation is integrated.
-
-### 26. Update Order Status
-
-```http
-PUT /orders/{orderId}/status
-```
-
-**Authorization:** `ADMIN`
-
-**Request Body:**
+Example order-status request (check the accepted enum values in `UpdateOrderStatusRequestDTO` and `OrderStatus`):
 
 ```json
 {
-  "status": "PROCESSING"
+  "status": "SHIPPED"
 }
 ```
 
-Valid status flow:
+### Payments
 
-```text
-PENDING
-   ↓
-CONFIRMED
-   ↓
-SHIPPED
-   ↓
-OUT_FOR_DELIVERY
-   ↓
-DELIVERED
-```
+| Method | Endpoint | Purpose | Access |
+|---|---|---|---|
+| POST | `/payments/{orderId}` | Create payment for an order | Authenticated; order ownership is checked |
+| PUT | `/payments/{paymentId}/complete` | Complete simulated payment | ADMIN |
 
-For new orders, successful payment changes the order from `PENDING` to `CONFIRMED`.
+The current payment controller does not accept a request body for payment creation or completion. The service derives the amount from the order and creates a server-controlled transaction record. This is a simulated payment flow, not a connection to a real payment processor.
 
----
+### Inventory
 
-## 💳 Payment APIs
+| Method | Endpoint | Purpose | Access |
+|---|---|---|---|
+| PUT | `/inventory/{id}` | Set available stock | ADMIN |
+| PUT | `/inventory/{productId}/reserve` | Reserve stock | ADMIN under current URL security rule |
+| GET | `/inventory/{productId}` | Retrieve inventory for a product | Authenticated |
 
-### 27. Create Payment
-
-```http
-POST /payments/{orderId}
-```
-
-**Request Body:**
+Example stock update (confirm exact field validation in `InventoryRequestDTO`):
 
 ```json
 {
-  "paymentMethod": "UPI"
+  "availableStock": 20
 }
 ```
 
-Supported payment methods:
-
-```text
-UPI
-CARD
-NET_BANKING
-COD
-```
-
-The client does **not** send:
-
-```text
-amount
-status
-transactionId
-```
-
-These are controlled by the server.
-
-The amount is taken from:
-
-```text
-Order.totalAmount
-```
-
-Initial payment status:
-
-```text
-PENDING
-```
-
-Payment statuses:
-
-```text
-PENDING
-SUCCESS
-FAILED
-```
-
-The payment must belong to the authenticated user's order, and only one payment is allowed per order.
-
----
-
-## 📦 Inventory APIs
-
-### 29. Update Available Stock
-
-```http
-PUT /inventory/{productId}
-```
-
-**Authorization:** `ADMIN`
-
-**Request Body:**
+Example stock reservation (confirm exact field validation in `ReserveStockRequestDTO`):
 
 ```json
 {
-  "availableStock": 10
+  "quantity": 2
 }
 ```
 
-### 30. Reserve Stock
+### Quick API checklist
 
-```http
-PUT /inventory/{productId}/reserve
-```
+- Register and log in.
+- Copy the JWT from the login response.
+- Add `Authorization: Bearer <token>` to protected requests.
+- Create or retrieve products and categories.
+- Add a product to the cart.
+- Place an order.
+- Create a payment record for the order.
+- Use an administrator token to complete the simulated payment.
+- Retrieve inventory and verify the resulting stock values.
 
-**Authorization:** `ADMIN` for current isolated inventory testing
+## Business workflows
 
-**Request Body:**
+### Order placement
 
-```json
-{
-  "quantity": 3
-}
-```
-
-### 31. Get Inventory
-
-```http
-GET /inventory/{productId}
-```
-
-**Authorization:** Authenticated
-
-**Request Body:** None
-
-Example response:
-
-```json
-{
-  "productId": 14,
-  "availableStock": 7,
-  "reservedStock": 0
-}
-```
-
-Inventory reservation and sale finalization are also invoked internally by the Order and Payment workflows.
-
-## 📋 API Summary
-
-| # | Method | Endpoint | Authorization | Body |
-|---|---|---|---|---|
-| 1 | POST | `/users/register` | Public | JSON |
-| 2 | POST | `/users/login` | Public | JSON |
-| 3 | GET | `/users` | ADMIN | None |
-| 4 | GET | `/users/{userId}` | Authenticated | None |
-| 5 | PUT | `/users/{userId}` | Authenticated | JSON |
-| 6 | DELETE | `/users/{userId}` | ADMIN | None |
-| 7 | POST | `/products` | Authenticated | JSON |
-| 8 | GET | `/products` | Authenticated | None |
-| 9 | GET | `/products/{productId}` | Authenticated | None |
-| 10 | PUT | `/products/{productId}` | Authenticated | JSON |
-| 11 | DELETE | `/products/{productId}` | Authenticated | None |
-| 12 | POST | `/categories` | ADMIN | JSON |
-| 13 | GET | `/categories` | USER / ADMIN | None |
-| 14 | GET | `/categories/{categoryId}` | USER / ADMIN | None |
-| 15 | PUT | `/categories/{categoryId}` | ADMIN | JSON |
-| 16 | DELETE | `/categories/{categoryId}` | ADMIN | None |
-| 17 | POST | `/cart/add` | Authenticated | JSON |
-| 18 | GET | `/cart/{userId}` | Authenticated | None |
-| 19 | PUT | `/cart/item/{cartItemId}` | Authenticated | JSON |
-| 20 | DELETE | `/cart/items/{cartItemId}` | Authenticated | None |
-| 21 | DELETE | `/cart/{userId}/items` | Authenticated | None |
-| 22 | POST | `/orders/place` | Authenticated | None |
-| 23 | GET | `/orders/my-orders` | Authenticated | None |
-| 24 | GET | `/orders/{orderId}` | Authenticated | None |
-| 25 | PUT | `/orders/{orderId}/cancel` | Authenticated | None |
-| 26 | PUT | `/orders/{orderId}/status` | ADMIN | JSON |
-| 27 | POST | `/payments/{orderId}` | Authenticated | JSON |
-| 28 | PUT | `/payments/{paymentId}/complete` | ADMIN | None |
-| 29 | PUT | `/inventory/{productId}` | ADMIN | JSON |
-| 30 | PUT | `/inventory/{productId}/reserve` | ADMIN* | JSON |
-| 31 | GET | `/inventory/{productId}` | Authenticated | None |
-
----
-
-# 🧾 Order Processing Flow
-
-The planned checkout flow is:
+At a high level, the order service works with the authenticated user's cart:
 
 ```text
-Authenticated User
-        ↓
-Find User
-        ↓
-Find User's Cart
-        ↓
-Get CartItems
-        ↓
-Check Cart
-        ↓
-Create Order
-        ↓
-Create OrderItems
-        ↓
-Calculate Total Amount
-        ↓
-Save Order
-        ↓
-Clear Cart
-        ↓
-Return Order Response
+Authenticated user
+       |
+       v
+Load user's cart and cart items
+       |
+       v
+Validate cart and requested products
+       |
+       v
+Create order and order items
+       |
+       v
+Calculate order total
+       |
+       v
+Persist order
+       |
+       v
+Return order response
 ```
 
-The complete checkout operation will use:
+The order and inventory services should be reviewed together when changing checkout behavior, particularly transaction boundaries and cart-clearing behavior.
 
-```java
-@Transactional
-```
+### Payment lifecycle
 
-so that the database operations are handled as a single transaction.
-
----
-
-# 💰 Money Handling
-
-The project uses:
-
-```java
-BigDecimal
-```
-
-for monetary values instead of `double` or `float`.
-
-Examples:
-
-```java
-private BigDecimal price;
-
-private BigDecimal totalAmount;
-```
-
-This avoids floating-point precision problems when dealing with financial values.
-
----
-
-# 🧩 DTO Architecture
-
-DTOs are separated into request and response packages:
+The payment implementation is simulated:
 
 ```text
-dto/
-├── request/
-└── response/
+Create payment for an eligible order
+              |
+              v
+       Payment: PENDING
+              |
+              v
+Administrator completes payment
+              |
+              v
+        Payment: SUCCESS
+              |
+              v
+        Order: CONFIRMED
 ```
 
-This keeps the API contract separate from database entities.
+The service checks order ownership during payment creation and prevents duplicate payment records for an order. The payment amount and transaction identifier are generated/derived on the server rather than trusted from a client request. A real gateway integration is not included.
 
-For example:
+### Inventory lifecycle
+
+Inventory tracks available and reserved quantities separately:
 
 ```text
-AddToCartRequestDTO
-UpdateCartQuantityRequestDTO
+             Product
+                |
+                | one-to-one
+                v
+             Inventory
+          /             \
+ availableStock     reservedStock
 ```
 
-are request DTOs.
+When stock is reserved, available quantity decreases and reserved quantity increases. When a sale is finalized, reserved quantity decreases; the available quantity is not deducted a second time. A reservation release returns reserved quantity to available quantity.
 
-While:
+The inventory repository uses a pessimistic write lock for protected stock-changing operations, and transactional service methods are used to help preserve consistency during concurrent updates.
 
-```text
-CartResponseDTO
-CartItemResponseDTO
-OrderResponseDTO
-OrderItemResponseDTO
+## Error handling and validation
+
+The project uses Jakarta Validation for request DTOs and centralized exception handling through `GlobalExceptionHandler`.
+
+Domain exceptions in the codebase include examples such as:
+
+- `UserNotFoundException`
+- `InvalidCredentialsException`
+- `ProductNotFoundException`
+- `CategoryNotFoundException`
+- `OrderNotFoundException`
+- `InvalidOrderStatusException`
+- `PaymentNotFoundException`
+- `PaymentAlreadyExistsException`
+- `UnauthorizedPaymentException`
+- `InvalidStatusForPaymentException`
+- `InventoryNotFoundException`
+- `InsufficientStockException`
+- `InvalidReleaseOperationException`
+- `InvalidSaleOperationException`
+
+The global exception handler maps application and validation failures to structured API error responses. Exact status codes depend on the specific exception handler.
+
+## Testing
+
+Run the automated tests from the `ecommerce/` directory:
+
+```bash
+./mvnw test
 ```
 
-are response DTOs.
+The repository currently includes Spring Boot application test scaffolding and a security configuration test. The Maven file includes Spring Boot Test and Spring Security Test dependencies.
 
----
+API workflows can also be exercised manually with Postman. Important scenarios include:
 
-# ⚠️ Global Exception Handling
+- Registration and login.
+- Missing, malformed, or invalid JWT.
+- Access by USER versus ADMIN.
+- Product and category CRUD operations.
+- Cart add, update, and remove behavior.
+- Order ownership and cancellation rules.
+- Duplicate payment and invalid payment-state handling.
+- Insufficient stock and inventory reservation behavior.
+- Error and validation responses.
 
-The application uses:
+Do not interpret the presence of a test dependency or a manual test note as proof that every scenario has an automated test. Add and run dedicated unit and integration tests as the test suite grows.
 
-```java
-@ControllerAdvice
-```
+## Git workflow
 
-for centralized exception handling.
-
-Validation errors are handled using:
-
-```java
-MethodArgumentNotValidException
-```
-
-and application-specific exceptions include:
-
-```text
-UserNotFoundException
-ProductNotFoundException
-CategoryNotFoundException
-CartItemNotFoundException
-InvalidCredentialsException
-OrderNotFoundException
-InvalidOrderStatusException
-PaymentNotFoundException
-PaymentAlreadyExistsException
-UnauthorizedPaymentException
-InvalidStatusForPaymentException
-InsufficientStockException
-```
-
-API errors are returned using the common:
-
-```text
-ApiError
-```
-
-response structure.
-
----
-
-# 🔄 Git Branching Strategy
-
-The project uses feature branches.
-
-Example:
-
-```text
-main
- │
- ├── feature/user-module
- ├── feature/product-module
- ├── feature/category-module
- ├── feature/cart-module
- └── feature/order-module
-```
-
-Current development branch:
-
-```text
-feature/inventory
-```
-
-Latest completed Payment milestone:
-
-```text
-8c9e567 complete payment module
-```
-
-Next feature branch:
-
-```text
-feature/inventory
-```
-
-Typical workflow:
+The repository uses feature branches for incremental development. A typical workflow is:
 
 ```bash
 git checkout main
 git pull origin main
+git checkout -b feature/your-feature
 
-git checkout -b feature/<feature-name>
-
+# Make and verify your changes
 git add .
-git commit -m "Implement <feature>"
-
-git push -u origin feature/<feature-name>
+git commit -m "Describe the change"
+git push -u origin feature/your-feature
 ```
 
----
+Open a pull request to merge a reviewed feature into `main`.
 
-# 🧪 API Testing
+## Known implementation notes
 
-APIs are tested using **Postman**.
+- The Spring Boot application is located in `ecommerce/`, not at the repository root.
+- The configured application port is `8765`.
+- The checked-in `application.properties` has historically contained local connection settings and credentials. Replace secrets with environment-based configuration and rotate any credential that was committed.
+- MongoDB is declared as a dependency and a MongoDB URI is configured. Confirm which application services currently write to MongoDB before describing it as an active logging or auditing feature.
+- Swagger/OpenAPI, Docker, CI/CD, AWS deployment, Redis, Kafka/RabbitMQ, Elasticsearch, and expanded automated test coverage should be described as future work unless their implementation is added to the repository.
+- Payment processing is simulated. No real payment gateway is configured.
+- Verify endpoint request DTOs and enum values against source before using the example payloads in an external client.
 
-Testing includes:
+## Roadmap
 
-* Successful requests
-* Validation failures
-* Authentication failures
-* Authorization failures
-* Not-found scenarios
-* Cart operations
-* Order workflow
-* Payment validation and workflow
-* Duplicate payment scenarios
-* Unauthorized payment scenarios
-* Invalid payment status scenarios
-* Inventory stock validation
-* Stock reservation and release
-* Payment-to-inventory sale finalization
-* Transaction rollback scenarios
-* Concurrent stock scenarios
+Potential next steps:
 
----
+- Move database credentials and JWT secrets to environment-based configuration.
+- Add comprehensive service, controller, repository, and security tests.
+- Add API documentation with an OpenAPI/Swagger implementation.
+- Add Dockerfile and Docker Compose for local dependencies.
+- Add CI checks with GitHub Actions.
+- Add production profiles, database migrations, and deployment documentation.
+- Integrate a real payment provider with appropriate security and webhook validation, if required.
+- Expand observability and persistence for audit or order events where needed.
 
-# 🔮 Future Enhancements
-
-After completing the core e-commerce functionality, the following features are planned:
-
-### MongoDB
-
-MongoDB will be used alongside MySQL for use cases such as:
-
-```text
-Activity Logs
-Audit Logs
-Order Events
-User Activity
-```
-
-The same transactional data will not simply be duplicated across both databases.
-
-### Redis
-
-Planned use:
-
-```text
-Caching
-Product lookup optimization
-Session-related use cases
-```
-
-### Messaging
-
-Potential future integration:
-
-```text
-Kafka / RabbitMQ
-```
-
-for event-driven processing.
-
-### Search
-
-Potential integration:
-
-```text
-Elasticsearch
-```
-
-for advanced product search.
-
-### DevOps
-
-Planned:
-
-```text
-Docker
-GitHub Actions
-AWS Deployment
-```
-
-### Testing
-
-Planned:
-
-```text
-JUnit
-Mockito
-Integration Testing
-```
-
-### API Documentation
-
-Planned:
-
-```text
-Swagger / OpenAPI
-```
-
----
-
-# 🎯 Project Goals
-
-The goal of this project is not only to implement CRUD APIs but to demonstrate practical backend development concepts including:
-
-* REST API design
-* Layered architecture
-* Spring Security
-* JWT authentication
-* Role-based authorization
-* DTO-based API design
-* JPA entity relationships
-* Transaction management
-* Exception handling
-* Database design
-* Inventory and stock management
-* Transaction management
-* Concurrency control
-* Git feature-branch workflow
-* Testing
-* Cloud deployment
-* Microservice-ready architecture
-
----
-
-# 👨‍💻 Author
+## Author
 
 **Arpit Vishwakarma**
 
-Backend Developer | Java | Spring Boot | REST APIs | SQL | Automation Testing
+- GitHub: [@arpitjha461](https://github.com/arpitjha461)
+- Project: [E-commerce-Backend-Project](https://github.com/arpitjha461/E-commerce-Backend-Project)
 
 ---
 
-## 📌 Current Focus
-
-> **Inventory Management — Inventory entity, stock reservation, stock release, concurrency control, APIs, exception handling, and Order/Payment integration testing.**
+This project is developed for learning and demonstrating backend engineering concepts with Java and the Spring ecosystem.
