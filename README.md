@@ -369,8 +369,8 @@ Example login request:
 
 ```json
 {
-  "email": "user@example.com",
-  "password": "ChangeMe@123"
+  "email": "aj@infosys.com",
+  "password": "Admin@123"
 }
 ```
 
