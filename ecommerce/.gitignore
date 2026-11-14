@@ -38,3 +38,9 @@ build/
 # OS files
 .DS_Store
 Thumbs.db
+
+
+#Cred
+.env
+.env.*
+!.env.example
