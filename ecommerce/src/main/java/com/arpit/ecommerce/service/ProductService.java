@@ -11,6 +11,7 @@ import com.arpit.ecommerce.repository.CategoryRepository;
 import com.arpit.ecommerce.repository.InventoryRepository;
 import com.arpit.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -27,9 +28,10 @@ public class ProductService {
     @Autowired
     private InventoryRepository inventoryRepository;
 
+    @Transactional
     public ProductResponseDTO addProduct(ProductRequestDTO requestDTO){
         Category category = categoryRepository.findById(requestDTO.getCategoryId())
-                .orElseThrow(()-> new CategoryNotFoundException("Category not found with Id :"+ requestDTO.getCategoryId()));
+                .orElseThrow(()-> new CategoryNotFoundException("Category not found with Id :" + requestDTO.getCategoryId()));
         Product product = mapToEntity(requestDTO);
         product.setCategory(category);
         product = productRepository.save(product);
@@ -44,13 +46,21 @@ public class ProductService {
     }
 
     public List<ProductResponseDTO> getAllProducts(){
-        List<Product> products = productRepository.findAll();
-        List<ProductResponseDTO> responseDTOList = new ArrayList<>();
-        for (Product product :products){
-            responseDTOList.add(mapToResponseDTO(product));
-        }
-        return  responseDTOList;
+        return mapToResponseDTOList(productRepository.findAll());
     }
+
+    public List<ProductResponseDTO> searchProducts(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return new ArrayList<>();
+        }
+
+        String searchTerm = keyword.trim();
+        List<Product> products =
+                productRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                        searchTerm, searchTerm);
+        return mapToResponseDTOList(products);
+    }
+
     public ProductResponseDTO getProductById(Long id){
         Product product = productRepository.findById(id)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + id));
@@ -61,7 +71,7 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + id));
         Category category =categoryRepository.findById(requestDTO.getCategoryId())
-                        .orElseThrow(()-> new CategoryNotFoundException("Category not found with id: "+ requestDTO.getCategoryId()));
+                        .orElseThrow(()-> new CategoryNotFoundException("Category not found with id: " + requestDTO.getCategoryId()));
         updateProductFromDTO(product,requestDTO);
         product.setCategory(category);
         product = productRepository.save(product);
@@ -71,8 +81,17 @@ public class ProductService {
         productRepository.findById(id)
                 .orElseThrow(()-> new ProductNotFoundException("Product not found with id: " + id));
         productRepository.deleteById(id);
-        return "Product having id: "+id +"deleted successfully";
+        return "Product having id: " + id + " deleted successfully";
     }
+
+    private List<ProductResponseDTO> mapToResponseDTOList(List<Product> products) {
+        List<ProductResponseDTO> responseDTOList = new ArrayList<>(products.size());
+        for (Product product : products) {
+            responseDTOList.add(mapToResponseDTO(product));
+        }
+        return responseDTOList;
+    }
+
     private ProductResponseDTO mapToResponseDTO(Product product){
         ProductResponseDTO dto = new ProductResponseDTO();
         dto.setId(product.getId());

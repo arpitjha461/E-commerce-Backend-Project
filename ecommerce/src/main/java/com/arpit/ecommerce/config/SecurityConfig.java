@@ -48,6 +48,13 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT,"/inventory/**")
                         .hasRole("ADMIN")
 
+                        // Swagger
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**"
+
+                        ).permitAll()
                         // Any Request
                         .anyRequest().authenticated()
                 )
