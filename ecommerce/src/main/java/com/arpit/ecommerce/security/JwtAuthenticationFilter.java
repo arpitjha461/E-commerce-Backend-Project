@@ -14,6 +14,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
+
 import java.io.IOException;
 
 @Component
@@ -38,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 
         String jwt = authHeader.substring(7);
-        System.out.println("JWT: " + jwt);
+//        System.out.println("JWT: " + jwt);
         try {
             String email = jwtUtil.extractEmail(jwt);
             System.out.println("Extracted Email: " + email);

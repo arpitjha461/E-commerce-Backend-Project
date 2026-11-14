@@ -43,7 +43,17 @@ public class UserController {
         UserResponseDTO responseDTO = userService.register(requestDTO);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
     }
+
     @GetMapping
+    @Operation(
+            summary = "Get all users",
+            description = "Retrieves a list of all registered users"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Insufficient permissions")
+    })
     public List<UserResponseDTO> getUsers(){
         return userService.getUsers();
     }
