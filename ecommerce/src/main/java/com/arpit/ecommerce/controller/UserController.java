@@ -15,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 
 import java.util.List;
 
@@ -29,9 +30,11 @@ public class UserController {
     UserService userService;
 
     @PostMapping("/register")
+    @SecurityRequirements
     @Operation(
-            summary = "Resister a new user",
-            description = "create a new user account"
+            summary = "Register a new user",
+            description = "creates a new user account",
+            security = {}
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201",description = "User created successfully"),
@@ -106,9 +109,11 @@ public class UserController {
     }
 
     @PostMapping("/login")
+    @SecurityRequirements
     @Operation(
             summary = "Login User",
-            description = "Authenticates the User and returns a JWT token"
+            description = "Authenticates the User and returns a JWT token",
+            security = {}
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Login successful; JWT token returned"),
