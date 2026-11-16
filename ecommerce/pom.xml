@@ -86,6 +86,29 @@
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 			<version>2.9.1</version>
 		</dependency>
+
+
+		<!-- Spring Data Redis -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
+		</dependency>
+
+		<!-- Bucket4j Redis Common -->
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j_jdk17-redis-common</artifactId>
+			<version>8.18.0</version>
+		</dependency>
+
+		<!-- Bucket4j Lettuce Integration -->
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j_jdk17-lettuce</artifactId>
+			<version>8.18.0</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>
