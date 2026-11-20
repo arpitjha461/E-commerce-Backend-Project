@@ -333,6 +333,24 @@ The current security configuration explicitly restricts several operations:
 
 Product write operations and some other operations require authentication under the current catch-all security rule. Review controller and service logic for resource ownership and business restrictions before exposing the API publicly.
 
+## Interactive API documentation
+
+The application uses **springdoc-openapi** to generate an OpenAPI specification from the REST controllers and their annotations.
+
+Start the application, then open either endpoint:
+
+- **Swagger UI:** `http://localhost:8765/swagger-ui/index.html`
+- **OpenAPI JSON:** `http://localhost:8765/v3/api-docs`
+
+To try protected operations in Swagger UI:
+
+1. Register or log in using the public `POST /users/register` or `POST /users/login` endpoint.
+2. Copy the JWT returned by the login endpoint.
+3. Select **Authorize** in Swagger UI and provide the JWT. The configured HTTP bearer scheme sends it in the `Authorization: Bearer <token>` header.
+4. Execute the required operation. Endpoints restricted to administrators still require an ADMIN token, and service-level ownership checks continue to apply.
+
+The Swagger UI and OpenAPI JSON endpoints are public. Among the application API endpoints, registration and login are public; other operations require authentication, subject to the role rules below.
+
 ## API reference
 
 Base URL:
@@ -382,6 +400,7 @@ Use the token returned by login in the Authorization header for protected reques
 |---|---|---|---|
 | POST | `/products` | Create product | Authenticated |
 | GET | `/products` | List products | Authenticated |
+| GET | `/products/search?keyword={keyword}` | Search product names and descriptions (case-insensitive) | Authenticated |
 | GET | `/products/{id}` | Retrieve product | Authenticated |
 | PUT | `/products/{id}` | Update product | Authenticated |
 | DELETE | `/products/{id}` | Delete product | Authenticated |
@@ -628,7 +647,7 @@ Open a pull request to merge a reviewed feature into `main`.
 - The configured application port is `8765`.
 - The checked-in `application.properties` has historically contained local connection settings and credentials. Replace secrets with environment-based configuration and rotate any credential that was committed.
 - MongoDB is declared as a dependency and a MongoDB URI is configured. Confirm which application services currently write to MongoDB before describing it as an active logging or auditing feature.
-- Swagger/OpenAPI, Docker, CI/CD, AWS deployment, Redis, Kafka/RabbitMQ, Elasticsearch, and expanded automated test coverage should be described as future work unless their implementation is added to the repository.
+- Swagger/OpenAPI is implemented with springdoc-openapi and exposes the interactive UI and generated JSON specification. Docker, CI/CD, AWS deployment, Redis, Kafka/RabbitMQ, Elasticsearch, and expanded automated test coverage should be described as future work unless their implementation is added to the repository.
 - Payment processing is simulated. No real payment gateway is configured.
 - Verify endpoint request DTOs and enum values against source before using the example payloads in an external client.
 
@@ -638,7 +657,7 @@ Potential next steps:
 
 - Move database credentials and JWT secrets to environment-based configuration.
 - Add comprehensive service, controller, repository, and security tests.
-- Add API documentation with an OpenAPI/Swagger implementation.
+- Keep OpenAPI annotations and README endpoint examples synchronized as API contracts evolve.
 - Add Dockerfile and Docker Compose for local dependencies.
 - Add CI checks with GitHub Actions.
 - Add production profiles, database migrations, and deployment documentation.
