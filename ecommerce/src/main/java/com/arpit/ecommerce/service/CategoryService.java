@@ -24,13 +24,19 @@ public class CategoryService {
     }
 
     public List<CategoryResponseDTO> getAllCategories(){
-        List<Category> categoryList = categoryRepository.findAll();
-        List<CategoryResponseDTO> responseDTOList = new ArrayList<>();
+        return mapToResponseList(categoryRepository.findAll());
+    }
 
-        for (Category category : categoryList){
-            responseDTOList.add(mapToResponse(category));
+    public List<CategoryResponseDTO> searchCategories(String keyword) {
+        if (keyword == null || keyword.isBlank()) {
+            return new ArrayList<>();
         }
-        return responseDTOList;
+
+        String searchTerm = keyword.trim();
+        List<Category> categories =
+                categoryRepository.findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
+                        searchTerm, searchTerm);
+        return mapToResponseList(categories);
     }
 
     public CategoryResponseDTO getCategoryById(Long id){
@@ -58,6 +64,15 @@ public class CategoryService {
         category.setName(requestDTO.getName());
         category.setDescription(requestDTO.getDescription());
     }
+
+    private List<CategoryResponseDTO> mapToResponseList(List<Category> categories) {
+        List<CategoryResponseDTO> responseDTOList = new ArrayList<>(categories.size());
+        for (Category category : categories) {
+            responseDTOList.add(mapToResponse(category));
+        }
+        return responseDTOList;
+    }
+
     private CategoryResponseDTO mapToResponse(Category category){
          CategoryResponseDTO responseDTO = new CategoryResponseDTO();
          responseDTO.setId(category.getId());
