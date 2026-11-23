@@ -17,6 +17,13 @@ public class InventoryService {
     private InventoryRepository inventoryRepository;
 
     public String setAvailableStock(Long productId, Integer availableStock){
+        if (availableStock == null) {
+            throw new InsufficientStockException("Available stock is required");
+        }
+        if (availableStock < 0) {
+            throw new InsufficientStockException("Available stock cannot be negative");
+        }
+
         Inventory inventory = inventoryRepository.findByProductId(productId).orElseThrow(
                 ()-> new InventoryNotFoundException("Inventory Not found for product Id: "+productId));
 

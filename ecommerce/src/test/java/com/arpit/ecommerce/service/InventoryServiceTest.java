@@ -12,6 +12,18 @@ class InventoryServiceTest {
     private final InventoryService inventoryService = new InventoryService();
 
     @Test
+    void setAvailableStockRejectsNullValue() {
+        assertThrows(InsufficientStockException.class,
+                () -> inventoryService.setAvailableStock(1L, null));
+    }
+
+    @Test
+    void setAvailableStockRejectsNegativeValue() {
+        assertThrows(InsufficientStockException.class,
+                () -> inventoryService.setAvailableStock(1L, -1));
+    }
+
+    @Test
     void reserveStockRejectsZeroQuantity() {
         assertThrows(InsufficientStockException.class,
                 () -> inventoryService.setReserveStock(1L, 0));
