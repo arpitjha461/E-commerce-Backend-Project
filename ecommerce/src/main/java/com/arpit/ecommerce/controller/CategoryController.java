@@ -54,6 +54,22 @@ public class CategoryController {
         return categoryService.getAllCategories();
     }
 
+    @GetMapping("/search")
+    @Operation(
+            summary = "Search categories",
+            description = "Searches category names and descriptions using a case-insensitive keyword"
+    )
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Matching categories retrieved successfully"),
+            @ApiResponse(responseCode = "401", description = "Authentication required"),
+            @ApiResponse(responseCode = "403", description = "Insufficient permissions")
+    })
+    public List<CategoryResponseDTO> searchCategories(
+            @Parameter(description = "Keyword to match against category names and descriptions", example = "electronics")
+            @RequestParam String keyword) {
+        return categoryService.searchCategories(keyword);
+    }
+
     @GetMapping("/{id}")
     @Operation(
             summary = "Get category by ID",
