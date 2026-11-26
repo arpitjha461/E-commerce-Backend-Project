@@ -2,6 +2,7 @@ package com.arpit.ecommerce.service;
 
 import com.arpit.ecommerce.dto.response.CategoryResponseDTO;
 import com.arpit.ecommerce.entity.Category;
+import com.arpit.ecommerce.exception.CategoryNotFoundException;
 import com.arpit.ecommerce.repository.CategoryRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -10,8 +11,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -53,5 +56,27 @@ class CategoryServiceTest {
         verify(categoryRepository, never())
                 .findByNameContainingIgnoreCaseOrDescriptionContainingIgnoreCase(
                         anyString(), anyString());
+    }
+
+    @Test
+    void deleteCategoryReturnsSuccessMessageWithReadableSpacing() {
+        Category category = new Category();
+        category.setId(25L);
+        when(categoryRepository.findById(25L)).thenReturn(Optional.of(category));
+
+        String response = categoryService.deleteCategory(25L);
+
+        assertEquals("Category having id: 25 deleted successfully", response);
+        verify(categoryRepository).deleteById(25L);
+    }
+
+    @Test
+    void deleteCategoryThrowsWhenCategoryDoesNotExist() {
+        when(categoryRepository.findById(404L)).thenReturn(Optional.empty());
+
+        assertThrows(CategoryNotFoundException.class,
+                () -> categoryService.deleteCategory(404L));
+
+        verify(categoryRepository, never()).deleteById(404L);
     }
 }
