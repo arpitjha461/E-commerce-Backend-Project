@@ -57,7 +57,7 @@ public class CategoryService {
        categoryRepository.findById(id)
                 .orElseThrow(()-> new CategoryNotFoundException("category not found with id: "+id));
         categoryRepository.deleteById(id);
-        return "Category having id: "+ id +"deleted successfully";
+        return "Category having id: " + id + " deleted successfully";
     }
 
     private void updateCategoryFromDTO(Category category,CategoryRequestDTO requestDTO){
